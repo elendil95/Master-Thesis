@@ -1,0 +1,35 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{url} %url parsing
+\usepackage[colorlinks]{hyperref} %advanced referencing options
+\usepackage{float} %better images/tables positioning
+\usepackage{graphicx} %better image insertion
+\usepackage{amsmath} %text in equasions (include the 2 packages below)
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{IEEEtrantools}
+\usepackage{outlines} %sub-items in lists
+\usepackage{fancyhdr}
+%\usepackage[xindy,toc]{glossaries}
+%\makeglossaries
+%\usepackage[xindy]{imakeidx}
+\usepackage{advdate} %custom dates
+\usepackage{csquotes} %more consistent quotes
+%\makeindex
+%Acronyms and Definitions
+\usepackage{comment}
+\usepackage[backend=bibtex,bibencoding=utf8]{biblatex}
+\bibliography{mybib.bib}
+\begin{document}
+\pagestyle{fancy}
+\title{Thesis Draft}
+\author{Eugeio Maria Capuani}
+\maketitle
+\cleardoublepage
+\section{Realated Work}
+stuff stuff stuff citation \cite{texbook}
+\cleardoublepage
+\thispagestyle{empty}
+\printbibliography    
+\end{document}
