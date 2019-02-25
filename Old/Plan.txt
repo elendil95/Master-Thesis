@@ -1,0 +1,3 @@
+1) Look at the PassGAN source code, play with it and run it. look at the output.
+2) Read UNIX password security article by Ken Tompson (its in the passGAN reference list)
+3) Consider doing a paper review and add some extra considerations and topics of your own.

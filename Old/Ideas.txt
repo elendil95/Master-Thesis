@@ -1,0 +1,14 @@
+--Languages
+Try to adapt the PassGAN system to a different language dataset; does this hold potential for targeted attacks?
+
+--PaS
+Work on scalability, envision a sytem in which uers can submit their own datasets and get back password rules to use in crackign that datatset.
+Generally the idea is to scal this, so that the machine learnign worload does not have to be made on the client. Look into paper 58 in PassGAN
+
+--HiBP
+Could a machine learnign system benefit systems such as the HiBP API? can it be use not only to check wether a password is present in known braches, but wether it may be compromised in the future.
+
+--XKCD
+The CorrectHorseBatteryStaple way of choosign passwords works and is viable when it comes to traditional password tools, but in the end is just a bunch of words or very simple patterns, and more importantly it relies on obscurity and assumepitions about the users. Can somethign like GANs be used to atack these types of password and bypass their security?
+
+
