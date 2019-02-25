@@ -47,7 +47,7 @@ In the second scenario, we are trying to extract as many password as possible fr
 
 Two common tools for password cracking are John The Ripper and HashCat: these tools take advantage of common patterns in user behavour in order to optimize the cracking process: They are fed a list of strings to search in the database, and a set of mangling rules: they first compare the list with the database, and then go through the process again but applying each rule to each entry in the word-list; In order to crack passwords more efficiently, words-lists usually contain lists of common passwords or real passwords from other data leaks, but they may also contain dictionary words and natural language fragments.
 
-The rules are given in a regular language and express common things that users do when choosing passwords (such as adding numbers at the end of a string, toggling the case of the first letter or perform common pattern substitutions like \enquote{leet speak}). because of these mangling rules, a password like \texttt{P4ssw0rd1} may seem strong, but it will be cracked quite effortlessly
+The rules are given in a regular language and express common things that users do when choosing passwords (such as adding numbers at the end of a string, toggling the case of the first letter or perform common pattern substitutions like \enquote{leet speak}). because of these mangling rules, a password like \texttt{P4ssw0rd1} may seem strong, but it will be cracked quite effortlessly.
 
 \cleardoublepage
 \thispagestyle{empty}
