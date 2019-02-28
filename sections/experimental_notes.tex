@@ -6,3 +6,19 @@ It is yet to be established how grammatically correct words may affet the cracki
 In the next test i will try and add NL dictionaries and see how it goes. 
 
 My hope is that the network can retain the currect password characteristics, but imporve its ability to generate natural langage fragments. Perhaps trnaference learning might come in handy for this?
+
+\subsection{Update(28-2-2019)}
+
+After a second attempt i finished training the model (runtime was around 11.5 hours). i have a working model i can generate samples with, the same proprieties descrribed above hold after a full cycle of training. It is worth noting that after initially being stuck around \-0.8, the error eventually stabilized around \-0.6; This is the lowest i have seen so far.
+
+I am now ready to test this first sample, probably in HashCat. The plan is to extract the MD5 hashes and run a couple of tests:
+
+\begin{itemize}
+\item Run a rule-based attack using RockYou as a control group.
+\item Run a dictionary attack using the results of PAsGAN obtained from RockYou (and or Linked in, if i can spare 12 more hours to train)
+\item Run a dictionary attack using the results of PassGAN training on the Libero leak.
+\end{itemize}
+
+The main goal is to compare the last 2 with each otheer and see what differnces (if any) there are.
+
+After that i would like to train again on the Libero set using NL Dictionaries in the training data (which i have yet to acquire), to see if there is an imporvement or regression in the precentage of password cracked.

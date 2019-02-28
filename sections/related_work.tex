@@ -1,27 +1,45 @@
-\section{Realated Work}
+\section{Related Work}
 Both Password Cracking and deep learning are active areas of research developing at a rapid pace.
 
-In this setion, we aim to give an overview of the relevant knowledge in these areas as it relates to our thesis.
+In this section, we aim to give an overview of the relevant knowledge in these areas as it relates to our thesis.
 
 \subsection{Password Cracking}
 Password cracking has been around for a long time, and while technology has evolved greatly and continues to do so, the basic concepts have remained relatively similar:
 Back in 1979, Morris and Thompson were already exploring different ways to attack passwords and defend against such attacks \cite{Thompson1979}.
 
-At the base of all password attacks is the concept of \emph{key space}, i.e the set of all possible passwords of a certain lenght that use a specific character set: In the case of the password \texttt{'password'}, te key space can be expressed $26^8$ (i.e The the number of possible characters to the length of the string).
+At the base of all password attacks is the concept of \emph{key space}, i.e the set of all possible passwords of a certain length that use a specific character set: In the case of the password \texttt{'password'}, the key space can be expressed $26^8$ (i.e The number of possible characters to the length of the string).
 
-Key space is important because it is the basis from which password cracking techniques work off: if the password is sufficiently complex, an attacker will have to do an exhaustive search of the search space in order to find the password. It follows then, that one of principles of pasword strengh is to make the search space big eenough to be impractical to search through with current hardware.
-This is the reason why users are commonly advised to use a variety of different characters in their passwords.
+Key space is important because it is the basis from which password cracking techniques work off: if the password is sufficiently complex, an attacker will have to do an exhaustive search of the search space in order to find the password. It follows then, that one of principles of password strength is to make the search space big enough to be impractical to search through with current hardware.
+This is the reason why users are commonly advised to use a variety of different characters classes in their passwords.
 
 An attacker's goal is to try to shrink the subset of the search space that needs to be examined in order to speed up the process, many times exploiting user habits or inherit characteristics of the password.
 
-Password cracking can be accomplished in many ways, and the approach often depends on the situation: the attacker might be trying to gain access to a system by cracking the password of a high-priviledge user like a System Administrator, or he might be cracking a leaked password database in order to later sell the personal data contained within.
+Password cracking can be accomplished in many ways, and the approach often depends on the situation: the attacker might be trying to gain access to a system by cracking the password of a high-privilege user like a System Administrator, or he might be cracking a leaked password database in order to later sell the personal data contained within.
 
-In the first scenario, we might try to learn as much as we can about the target and try to use social engineering techniques in order to obtain the password; Phishing and various kind of fraud anre commonly used in such cases.
+In the first scenario, we might try to learn as much as we can about the target and try to use social engineering techniques in order to obtain the password; Phishing and various kind of fraud are commonly used in such cases.
 
 In the second scenario, we are trying to extract as many password as possible from the leaked database, and we might take advantage of user behavior in order to do so: Users tend to choose common passwords and to re-use the same password in multiple instances. If we were to attack common passwords first, we can significantly reduce the combine search space.
 
 \subsection{Rule-Based password crackers}
 
-Two common tools for password cracking are John The Ripper and \break \mbox{HashCat}\cite{john,hash_cat}: these tools take advantage of common patterns in user behavour in order to optimize the cracking process: They are fed a list of strings to search in the database, and a set of mangling rules: they first compare the list with the database, and then go through the process again but applying each rule to each entry in the word-list; In order to crack passwords more efficiently, words-lists usually contain lists of common passwords or real passwords from other data leaks, but they may also contain dictionary words and natural language fragments.
+Two common tools for password cracking are John The Ripper and \break \mbox{HashCat}\cite{john,hash_cat}: these tools take advantage of common patterns in user behaviour in order to optimize the cracking process:  Both tools have a variety of techniques an attacker can employ, and we will briefly run through them using HashCat as an example: \newline
+%there are 3 main categories: brute force attacks, dictionary attacks and rule-based attacks
+
+HashCat calls these techniques \enquote{modes}, and the simplest of these is \emph{Mass attack} mode: this is modified version of key space search, meant to attack simpler passwords while shrinking the key space search: instead of searching the total space for a password of lenght $x$, we define a simple regular pattern expessing the what character classes are there and at which position, saving us a substantial amount of processing time.
+For example is we have a passowrd like \texttt{Benjamin86} or \texttt{Iloveyou02}, we can define our pattern to be a ten-character string with eight lowercase letters and two numbers at the end:
+
+In a classic bruteforce atack we would deal with a search space of $62^{10}$ (or roughtly $8 \times 10^{17}$ combinations), but thanks to the above-mentioned pattern we can reduce our search space to around $4 \times 10^{13}$ possibiities if we assume that the first character in the string is the only one that can be uppercase.
+Furthermore we can use the \texttt{--increment } option in Hashcat to apply this pattern to all trings up to ten characters, allowing us to match shorter passwords that follow the same pattern.
+
+This method is rather simplistic and not very flexible, but exempplifies some oof the waysin which attackers can optimize key space attacks.\newline
+
+The main mode of operation oh HashCat \emph{straight} mode, that performs a dictionary attack: In this mode, the program is fed a wordlist/dictionary, and tries each entry the wordlist as a password candidate. Because of its simplicity, such a dictionary attack works best with a wordlist composed of leaked passwords; the aim is to target very common passwords and users that re-use passwords, but the effectiveness of such an attack can increase significantly depening on what wordlist is used.
+
+Dictionary attacks can be further enhanced by combining them in warious ways: one approach would be to use two wordlists and append/prepend each entry in the second one to each entry in the first; the second wordlist might be a latural language dictionary, a wordlist of leaked passwords, or perhaps the output of a brute-force attempt; If we use the patterns decribed in the Mass Atack mode to generate strings we combine with a wordlist, we will obtained a more targeted and effective version of the Mass Attack method. \newpage
+
+Finally we come to rule-based attacks: In short they are an extension of all the methods described above, and all the aformationed techniques can also be performed using rules; however, rulees are more flexible and allow for more thorrow deffinition of the patterns that may appear in a password, going beyond the capabilities of a regular language.
+ 
+\cleardoublepage
+They are fed a list of strings to search in the database, and a set of mangling rules: they first compare the list with the database, and then go through the process again but applying each rule to each entry in the word-list; In order to crack passwords more efficiently, words-lists usually contain lists of common passwords or real passwords from other data leaks, but they may also contain dictionary words and natural language fragments.
 
 The rules are given in a regular language and express common things that users do when choosing passwords (such as adding numbers at the end of a string, toggling the case of the first letter or perform common pattern substitutions like \enquote{leet speak}). because of these mangling rules, a password like \texttt{P4ssw0rd1} may seem strong, but it will be cracked quite effortlessly.
