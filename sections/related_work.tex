@@ -32,9 +32,20 @@ Bacause the hashing alorithm needs to always output the same result for a given 
 
 This leads us to our next attack strategy, which is to build a table with Pre-computed hashes for all the most common passwords: this technique saves a lot of time since we do not need to encrypt every candidate password before comparing it with the database. These tables are commonly referred to as \emph{Rainbow Tables}, and they are a simplified version of the rule-based techniques covered in section \ref{hash_and_jtr}.
 
-Rainbow tables can be defeated by using \emph{password salting}: salting works by generating a random string that is then appended to the user's password before it is encrypted
+Rainbow tables can be defeated by using \emph{password salting}: salting works by generating a random string that is then appended to the user's password before it is encrypted (mainly when the user first creates the account). The authors in \cite{Thompson1979} use a 12-bit random number as their salt, and newer methods have arose that yiield better results; by generating a unique salt per each user (or even better, per each individual passowrd), Rainbow tables and other correlation attacks will be rendered useless as its no longer possible to generate hashes of passwords that will work on the target; one might attempt to generate tables that contain salts, but its impractical as it would mean brute-forcing the key space of the salt.
+This can be done however in cases where the salt is very small, or alternatively when the system administrators have chosen one fixed salt string with which every password is processed.
+The latter mistake its particularly grave, as it defeats the porpouse of having salts in the first place.
+   
+Its important to store the salt value in a proper manner however, because salted passwords are still vulnerable to rule-based attacks if the salt is leaked alongside the user's passowrds.
+%%NOT TRUE YOU FUCKING CUNT. CHANGE THAT!
 
-%Finish talking about salting
+% a coouple of points about storing salts:
+% 1) Normally you only have the salt and the hash of the salted password, not the plaintext.
+% 2) yes the passowrd is cleartext+salt => sha256, but if you have per-password salt you are still fucked:
+%    yes can glean the format of the salt (e.g a 16-bit alphanum string), that just means that you need to create a mask to generate every possible salt and then append it to every single password candidate. You effectively have to bruteforce the salt key space. In order to do this efficiently you would need a way to revert the hashing algorythm.
+
+%FUCK thats not really true either: you have a list of salts to use: you don't need to brute force, you just need to try them in sequence; that means you basicallly double your search time (O^2), but still its faster than brute-forcing...?
+For a more current  example of how these security practices have evolved since 1979, we can look at the National Institute of Standards and Technologies and their  
 %Use NIST Page for modern equivalnts   
 
 An attacker's goal is to try to shrink the subset of the search space that needs to be examined in order to speed up the process, many times exploiting user habits or inherit characteristics of the password.\newline

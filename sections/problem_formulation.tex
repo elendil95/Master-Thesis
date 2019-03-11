@@ -1,1 +1,17 @@
-\section{Problem Formulation}
+\section{Introduction}
+\subsection{Motivation}
+The aim of this thesis is test the PassGAN system with a different dataset of passwords from Italy, to test whether there are any differences in performance when PassGAN is used to crack a database from a non-english source.
+
+The underlying tough behind this it to test whether differences in grammar and language have any noticeable effect when training the system: perhaps GANs are expressive enough that they 
+can account for the differnt provenance of the data without any significant change, or maybe some adjustments should be made such as the inclusion of Natural Language corpora on the training data.
+
+The inclusion Natural language data might present its own challenges, such as the fact that some prior studies with GANs and RNNs indicates that the inclusion of such data ends up creating a lot of noise rather than improving performance\cite{PassGAN, Melicher2016}. 
+
+These studies instead seem to suggest that one should "focus the network's effort" so to speak, by using data that is as close as possible to the desired result.
+One other possible change might be to mix password datasets from English and non-English sources; One might make the case that linguistic differences are not that relevant when it comes to passwords, that the use of grammatical constructs is often trumped by patters of behaviour in password creation that are international. Thus, it should not matter where the network learns these patterns.
+
+%Another interesting case might be made for transference learning
+%Netowrk output shows somethgin resembling romance languages but not quite.
+
+%What is the academical significance of this, how can this further research in the field? 
+\subsection{Problem formulation}
