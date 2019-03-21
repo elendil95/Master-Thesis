@@ -1,0 +1,27 @@
+\section{Deep Learning}
+
+Deep Learning is a class of machine learning systems whose goal is to extract relevant features from a distribution of data. On an abstract level, Deep Learning systems take inspiration the structure of human biology, with multi-layer structures of nodes (Neurons): each layer might be thought of as a section of a brain recognizing a very specific element, and when all layers work in unison they can recognize and act upon high level features and categories.
+
+Deep learning is used in many fields, and has achieved notable results in fields such as Computer Vision, Image Recognition and Natural Language Processing.
+
+Deep Learning Systems are particularly useful because of their ability to extract high level features from data, especially features that are hard to define algorithmically by humans.
+
+Another peculiar features of such network is that no-one really knows exactly how the machine learns. There has been such research trying to understand what exactly each layer does and what exactly it learns, but this is still an open question.\newline %REFERENCE.
+Because of the number of variables involved, it is hard to predict results might derive from a change in the initial condition; as a consequence of this uncertainty, the process of working with Deep Learning system is one of incremental change and experimentation. 
+
+In this coming section we will cover two types of Deep Learning Neural Networks that are relevant in this paper: \emph{Recurrent Neural Networks} (RNNs) and  \emph{Generative Adversarial Networks} (GANs).
+
+\subsection{Recurrent Neural Networks}
+Recurrent Neural Networks are the simpler of the two network architectures; they are a kind of neural network specialized in working with data that has a temporal component.
+For instance if the network needs to predict the next letter or word in a sentence, it needs to know what came before. Another example might be a neural network that scales or edits videos, where the action to take on any given frame might be dependent on the frames that came before.
+
+The precise method the network uses to keep track of temporal eelements is rather complex, but can be briefly summarived by saying that each neuron in the network holds a state, and that each iteration a neuron's state from the previous iteration is fed as input to itself in the current iteration along side the current data to be processed.
+This creates a feedback loop, whereby at any given point the calculation performed by each neuron are influenced by previous events.
+%LSTM might be waaay too much detail. Also fuck its a *masive over-simplificatin*
+ For some particular tasks such as Natural language generation this setup is not enough, since as time goes on the network will develop a bias towards features present in more recent iteration; the influence of data from the older iteration will degrade over time, and the system will slowly tend to 'forget' features and patterns it learned at the beginnning: when it is then presented with new data it has never seen before, thi bias can pose a problem.
+
+To dampen the effects of this bias one might employ Long-Short Term Memory cells (LSTM), a special kind on RNN neuron which can dynamically rank new information (and by extention, the content of its state) based on its relevance. LSTM ensures that important data is retained regardless on when it was learned, and thus diminishes the effect of the base RNN bias.\newline
+It should be noted however that LSTM does not constitute a straight upgrade from the plain RNN architecture: it may be beneficial in certain cases, but decremental in others.
+%maybe add a picture of a RNN or normal network for context?
+
+\section{Generative Adversarial Networks} 

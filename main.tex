@@ -2,7 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{url} %url parsing
-\usepackage[colorlinks]{hyperref} %advanced referencing options
+\usepackage[colorlinks, allcolors=blue]{hyperref} %advanced referencing options
 \usepackage{float} %better images/tables positioning
 \usepackage{graphicx} %better image insertion
 \usepackage{amsmath} %text in equasions (include the 2 packages below)
@@ -14,7 +14,9 @@
 \usepackage{csquotes} %more consistent quotes
 \usepackage{comment}
 \usepackage[backend=bibtex,bibencoding=utf8]{biblatex}
-\usepackage[parfill]{parskip} %Sane paragraphs at last!
+\usepackage[parfill]{parskip} %Sane paragraphs at last! The same can be acheived with the 2 lines below:
+%\setlength{\parskip}{5pt}
+%\setlength{\parindent}{0pt}
 \bibliography{mybib.bib}
 \begin{document}
 \pagestyle{empty}
@@ -25,6 +27,8 @@
 \input{sections/problem_formulation.tex}
 \cleardoublepage
 \input{sections/related_work.tex}
+\cleardoublepage
+\input{sections/deep_learning.tex}
 \cleardoublepage
 \input{sections/experimental_notes.tex}
 \cleardoublepage
