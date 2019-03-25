@@ -2,23 +2,94 @@
 
 Deep Learning is a class of machine learning systems whose goal is to extract relevant features from a distribution of data. On an abstract level, Deep Learning systems take inspiration the structure of human biology, with multi-layer structures of nodes (Neurons): each layer might be thought of as a section of a brain recognizing a very specific element, and when all layers work in unison they can recognize and act upon high level features and categories.
 
-Deep learning is used in many fields, and has achieved notable results in fields such as Computer Vision, Image Recognition and Natural Language Processing.
+Deep learning is used in many fields, and has achieved notable results in fields such as Computer Vision, Image Recognition and Natural Language Processing.%REFERENCE
 
 Deep Learning Systems are particularly useful because of their ability to extract high level features from data, especially features that are hard to define algorithmically by humans.
 
 Another peculiar features of such network is that no-one really knows exactly how the machine learns. There has been such research trying to understand what exactly each layer does and what exactly it learns, but this is still an open question.\newline %REFERENCE.
 Because of the number of variables involved, it is hard to predict results might derive from a change in the initial condition; as a consequence of this uncertainty, the process of working with Deep Learning system is one of incremental change and experimentation. 
 
+Figure \ref{fig:DNN} shows the typical structure of a Deep Neural Network:
+\begin{figure}[H]
+\centering    
+\begin{neuralnetwork}[height=8]
+\newcommand{\x}[2]{$x_#2$}
+\newcommand{\y}[2]{$y_#2$}
+\newcommand{\hfirst}[2]{\small $h1_#2$}
+\newcommand{\hsecond}[2]{\small $h2_#2$}
+\inputlayer[count=4, bias=false, title=Input Layer, text=\x]
+\hiddenlayer[count=8, bias=false, title=Hidden Layer 1, text=\hfirst] \linklayers
+\hiddenlayer[count=8, bias=false, title=Hidden Layer 2, text=\hsecond] \linklayers
+\outputlayer[count=4, title=Output Layer, text=\y] \linklayers
+\end{neuralnetwork}
+\caption{An example of a Deep Neural Network}\label{fig:DNN}
+\end{figure}
+As we can see in the example above, a neural network is composed of an Input Layer, a number of Hidden layers and an Output layers.
+Speaking in general terms, the input layer receives the chunk of data to be processed, the hidden layers operate on the input sequentially, and the output layer is where the the system expresses what it beleives the data to mean.
+
+Training of a neural network is composed of two distinct phases: the \emph{Feed Forward} phase and the \emph{Back-Propagation} Pahse: In the feed forward phase the network processes the current data and comes to a result, then the networks computes the Error (or how much the result it had come to deviated from the expected results), and tweaks its parameters in an effort to reduce the error.
+Once both phases are completed the network has completed an iteration. The next bacth of data is then introduced and the process begins anew.
+
 In this coming section we will cover two types of Deep Learning Neural Networks that are relevant in this paper: \emph{Recurrent Neural Networks} (RNNs) and  \emph{Generative Adversarial Networks} (GANs).
+\clearpage
 
 \subsection{Recurrent Neural Networks}
 Recurrent Neural Networks are the simpler of the two network architectures; they are a kind of neural network specialized in working with data that has a temporal component.
 For instance if the network needs to predict the next letter or word in a sentence, it needs to know what came before. Another example might be a neural network that scales or edits videos, where the action to take on any given frame might be dependent on the frames that came before.
 
-The precise method the network uses to keep track of temporal eelements is rather complex, but can be briefly summarived by saying that each neuron in the network holds a state, and that each iteration a neuron's state from the previous iteration is fed as input to itself in the current iteration along side the current data to be processed.
+The precise method the network uses to keep track of temporal elements is rather complex, but can be briefly summarized by saying that each neuron in the network holds a state, and that each iteration a neuron's state from the previous iteration is fed as input to itself in the current iteration along side the current data to be processed.
 This creates a feedback loop, whereby at any given point the calculation performed by each neuron are influenced by previous events.
-%LSTM might be waaay too much detail. Also fuck its a *masive over-simplificatin*
- For some particular tasks such as Natural language generation this setup is not enough, since as time goes on the network will develop a bias towards features present in more recent iteration; the influence of data from the older iteration will degrade over time, and the system will slowly tend to 'forget' features and patterns it learned at the beginnning: when it is then presented with new data it has never seen before, thi bias can pose a problem.
+
+Figure \ref{fig:rnn_neuron} explains more clearly.
+\begin{figure}[H]    
+\centering
+\begin{tikzpicture}[shorten >= 1pt, node distance = 2cm, on grid, auto, square/.style={regular polygon, regular polygon sides = 4}]
+\node[](0){};
+\node[below of = 0](1){};
+\node[below of = 1] (2){};
+
+\node[state, right of = 1](N1){$H1_{(t)}$};
+\node[state, right of = N1](N2){$H2_{(t)}$};
+\node[state, right of = N2](output){$O$};
+
+\draw[-]   (0) edge node{$x_i$} (N1)
+            (2) edge node{$x_i$}(N1)
+            (N1) edge (N2)
+            (N2) edge (output);
+\end{tikzpicture}
+\begin{center}
+Iteration number 1 $t=1$
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\centering    
+\begin{tikzpicture}[shorten >= 1pt, node distance = 2cm, on grid, auto, square/.style={regular polygon, regular polygon sides = 4}]
+	\node[](0){};
+	\node[below of = 0](1){};
+	\node[below of = 1] (2){};
+	
+	\node[state, right of = 1](N1){$H1_{(t)}$};
+	\node[state, right of = N1](N2){$H2_{(t)}$};
+	\node[state, right of = N2](output){$O$};
+	
+	\draw[-]   (0) edge node{$x_i$}(N1)
+	(2) edge node{$x_i$} (N1)
+	(N1) edge[loop above] node{$H1_{t-1}$} (N1)
+	(N2) edge[loop above] node{$H2_{t-1}$} (N2)
+	(N1) edge (N2)
+	(N2) edge (output);	
+\end{tikzpicture}
+\begin{center}
+Iteration number 2 $t=2$
+\end{center}
+    \caption{A simplified representation of a node in a Reoccurrent Neural Network}\label{fig:rnn_neuron}
+    
+\end{figure}
+
+% LSTM might be waaay too much detail. Also fuck its a *masive over-simplificatin*
+
+For some particular tasks such as Natural language generation this setup is not enough, since as time goes on the network will develop a bias towards features present in more recent iteration; the influence of data from the older iteration will degrade over time, and the system will slowly tend to 'forget' features and patterns it learned at the beginnning: when it is then presented with new data it has never seen before, thi bias can pose a problem.
 
 To dampen the effects of this bias one might employ Long-Short Term Memory cells (LSTM), a special kind on RNN neuron which can dynamically rank new information (and by extention, the content of its state) based on its relevance. LSTM ensures that important data is retained regardless on when it was learned, and thus diminishes the effect of the base RNN bias.\newline
 It should be noted however that LSTM does not constitute a straight upgrade from the plain RNN architecture: it may be beneficial in certain cases, but decremental in others.
