@@ -40,7 +40,6 @@ For instance if the network needs to predict the next letter or word in a senten
 The precise method the network uses to keep track of temporal elements is rather complex, but can be briefly summarized by saying that each neuron in the network holds a state, and that each iteration a neuron's state from the previous iteration is fed as input to itself in the current iteration along side the current data to be processed.
 This creates a feedback loop, whereby at any given point the calculation performed by each neuron are influenced by previous events.
 
-Figure \ref{fig:rnn_neuron} explains more clearly.
 \begin{figure}[H]    
 \centering
 \begin{tikzpicture}[shorten >= 1pt, node distance = 2cm, on grid, auto, square/.style={regular polygon, regular polygon sides = 4}]
@@ -86,13 +85,19 @@ Iteration number 2 $t=2$
     \caption{A simplified representation of a node in a Reoccurrent Neural Network}\label{fig:rnn_neuron}
     
 \end{figure}
+\clearpage
+Figure \ref{fig:rnn_neuron} illustrates the concept above: taking picture \ref{fig:DNN} as a starting point we can see the feedback loop of an RNN node at work.
+The first picture shows the state of three nodes in the network on iteration 1: During the feed forward phase the first neurn in the hidden layer one receives input $x$ from the input layer, processes it and passes it on to the consecutive layers; after processing , each hidden neuron saves its working values, and those values form the node's state.  
 
+In the next iteration (shown in the second picture) the process repeats, but this time H! receives not only input from a, but also its previous state as input; it processes the combined values and passes it on to H2, which ondergoes the same procedure.
+
+Through this mechanism, the network the network can better retain knowledge of features from past samples of data, and yied better results.
+However this also highlights a potential problem: because each node is only fed its previous state each iteration, as the trainin process continues the netwok will deveop a bias towards more recent samples of data.
+ The cyclical nature of the feed-forward means that at any given iteration the network will retain memory of the initial stages of training, but the influence of those early iterations will wayne with time as the network adapts and changes when presented with new data.
 % LSTM might be waaay too much detail. Also fuck its a *masive over-simplificatin*
-
 For some particular tasks such as Natural language generation this setup is not enough, since as time goes on the network will develop a bias towards features present in more recent iteration; the influence of data from the older iteration will degrade over time, and the system will slowly tend to 'forget' features and patterns it learned at the beginnning: when it is then presented with new data it has never seen before, thi bias can pose a problem.
 
 To dampen the effects of this bias one might employ Long-Short Term Memory cells (LSTM), a special kind on RNN neuron which can dynamically rank new information (and by extention, the content of its state) based on its relevance. LSTM ensures that important data is retained regardless on when it was learned, and thus diminishes the effect of the base RNN bias.\newline
 It should be noted however that LSTM does not constitute a straight upgrade from the plain RNN architecture: it may be beneficial in certain cases, but decremental in others.
-%maybe add a picture of a RNN or normal network for context?
 
 \section{Generative Adversarial Networks} 
