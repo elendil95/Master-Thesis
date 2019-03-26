@@ -22,12 +22,18 @@
 \usepackage{tikz}
 \usetikzlibrary{automata,positioning,shapes.geometric,fit}
 \bibliography{mybib.bib}
+\pagestyle{fancy}
+\extramarks{\markboth}{}
+%\lhead{\markboth}
+\rhead{\thepage}
 \begin{document}
-\pagestyle{empty}
+\pagenumbering{gobble}
+\thispagestyle{empty}
 \title{Thesis Draft}
 \author{Eugeio Maria Capuani}
 \maketitle
 \cleardoublepage
+\pagenumbering{arabic}
 \input{sections/problem_formulation.tex}
 \cleardoublepage
 \input{sections/related_work.tex}
