@@ -95,19 +95,26 @@ However this also highlights a potential problem: because each node is only fed 
  The cyclical nature of the feed-forward means that at any given iteration the network will retain memory of the initial stages of training, but the influence of those early iterations will wane with time as the network adapts and changes when presented with new data.
 % LSTM might be waaay too much detail. Also fuck its a *masive over-simplificatin*
 For some particular tasks such as Natural language generation this bias can significantly influence the final results.
+
 % setup is not enough, since as time goes on the network will develop a bias towards features present in more recent iteration; the influence of data from the older iteration will degrade over time, and the system will slowly tend to 'forget' features and patterns it learned at the beginnning: when it is then presented with new data it has never seen before, thi bias can pose a problem.
 
-To dampen the effects of this bias one might employ Long-Short Term Memory cells (LSTM), a special kind on RNN neuron which can dynamically rank new information (and by extention, the content of its state) based on its relevance. LSTM ensures that important data is retained regardless on when it was learned, and thus diminishes the effect of the base RNN bias.\newline
-It should be noted however that LSTM does not constitute a straight upgrade from the plain RNN architecture: it may be beneficial in certain cases, but decremental in others.
+%To dampen the effects of this bias one might employ Long-Short Term Memory cells (LSTM), a special kind on RNN neuron which can dynamically rank new information (and by extention, the content of its state) based on its relevance. LSTM ensures that important data is retained regardless on when it was learned, and thus diminishes the effect of the base RNN bias.\newline
+%It should be noted however that LSTM does not constitute a straight upgrade from the plain RNN architecture: it may be beneficial in certain cases, but decremental in others.
 
 \subsection{Generative Adversarial Networks}
 Generative Adversarial Networks are a more complex architecture, composed of two discrete neural networks that are in competition with each other.
 
-The system works by empploying a generative network $(G)$ and a discriminator network $(D)$:
-Given a distribution of data, $G$ generates samples that follow the underlaying distribution; $D$ on the other hand is fed both input data and the output from $G$, and it's task is to figure out whether any given sample comes from the data or has been generated from $G$. In layman terms, we might say that it is $D$'s job to tell 'real' samples from 'fake' ones.
+The system works by employing a generative network $(G)$ and a discriminator network $(D)$: %G uses random noise, not input dataset.
+Given a distribution of data, $G$  generate samples from random noise. $D$ on the other hand is fed both input data and the output from $G$, and it's task is to figure out whether any given sample comes from the data or has been generated from $G$. In layman terms, we might say that it is $D$'s job to tell 'real' samples from 'fake' ones.
 
-The feedback from $D$ is factores into the Error function and helps $G$ improve, and the goal is to train untill $D$ is no longer able to tell the two inputs apart.
+The feedback from $D$ is factors into the Error function and helps $G$ improve, and the goal is to train untill $D$ is no longer able to tell the two inputs apart.
 
-As Goodfellow et al. \cite{Goodfellow2014} explain in their paper, $D$ is trained to maximize the likelihood of assigning the correct label to both data samples and samples from $G$; The generative network in turn is encouraged to generate data that is as similar as possible to the underlying distribution: this creates a race of sorts between the two networks, and a beneficial feedback loop between the two.
+%As Goodfellow et al. \cite{Goodfellow2014} explain in their paper, $D$ is trained to maximize the likelihood of assigning the correct label to both data samples and samples from $G$; The generative network in turn is encouraged to generate data that is as similar as possible to the underlying distribution: this creates a race of sorts between the two networks, and a beneficial feedback loop between the two.
 
-The authors of \cite{Goodfellow2014} also mention 
+Goodfellow et al.\cite{Goodfellow2014} explain the interplay between the two networks as a min-max game: the goal of $D$ is to minimize the error when evaluating samples, while the goal of $G$ is to maximize the error: the reason for this is that by maximizing the likelihood of $D$ failing, we are implicitly telling $G$ to generate samples as close as possible to the input data.
+One important thing to note is that we do not show $G$ any of the input data at any point: all that $G$ has access to is a random noise distribution and the error value for $D$; the Generator has to slowly shape that noise into data resembling the Discriminator's input, by using Gradient Descent (or Ascent in this case, since we are trying to maximize the function.)
+
+Because operation of the network relies on this tight feedback loop between $D$ and $G$, one needs to pay close attention to how quickly each network learn.
+The idea, as the authors in \cite{Goodfellow2014} point out, is to have a certain number of iterations of $D$ before we go ahead and adjust the Error for $G$; Conceptually, we might think of this as giving $D$ enough time to tell the real from the fake data reliably (or try), before iterating $G$ to counter $D$'s current strategy.
+
+The original paper indicates this ratio with $k$, and notes that increasing it grows the required computation significantly. In their experiments the authors used a $k$ value of one for performance reasons, while PassGAN defaults to a $k$ value of 10\cite{PassGAN}.
