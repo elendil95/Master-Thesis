@@ -73,8 +73,8 @@ Iteration number 1 $t=1$
 	
 	\draw[-]   (0) edge node{$x_i$}(N1)
 	(2) edge node{$x_i$} (N1)
-	(N1) edge[loop above] node{$H1_{t-1}$} (N1)
-	(N2) edge[loop above] node{$H2_{t-1}$} (N2)
+	(N1) edge[loop above] node{$H1_{(t-1)}$} (N1)
+	(N2) edge[loop above] node{$H2_{(t-1)}$} (N2)
 	(N1) edge (N2)
 	(N2) edge (output);	
 \end{tikzpicture}
@@ -88,7 +88,7 @@ Iteration number 2 $t=2$
 Figure \ref{fig:rnn_neuron} illustrates the concept above: taking picture \ref{fig:DNN} as a starting point we can see the feedback loop of an RNN node at work.
 The first picture shows the state of three nodes in the network on iteration 1: During the feed forward phase the first neuron in the hidden layer one receives input $x$ from the input layer, processes it and passes it on to the consecutive layers; after processing , each hidden neuron saves its working values, and those values form the node's state.  
 
-In the next iteration (shown in the second picture) the process repeats, but this time H1 receives not only input from $x$, but also its previous state as input; it processes the combined values and passes it on to H2, which undergoes the same procedure.
+In the next iteration (shown in the second picture) the process repeats, but this time the  H1 node receives not only input from $x$, but also its previous state as input; it processes the combined values and passes it on to H2, which undergoes the same procedure.
 
 Through this mechanism, the network can better retain knowledge of features from past samples of data, and yield better results.
 However this also highlights a potential problem: because each node is only fed its previous state with each successive iteration, as the training process continues the network will develop a bias towards more recent samples of data.
@@ -104,15 +104,29 @@ For some particular tasks such as Natural language generation this bias can sign
 \subsection{Generative Adversarial Networks}
 Generative Adversarial Networks are a more complex architecture, composed of two discrete neural networks that are in competition with each other.
 
-The system works by employing a generative network $(G)$ and a discriminator network $(D)$: %G uses random noise, not input dataset.
-Given a distribution of data, $G$  generate samples from random noise. $D$ on the other hand is fed both input data and the output from $G$, and it's task is to figure out whether any given sample comes from the data or has been generated from $G$. In layman terms, we might say that it is $D$'s job to tell 'real' samples from 'fake' ones.
+The system works by employing a generative network $(G)$ and a discriminator network $(D)$:
 
-The feedback from $D$ is factors into the Error function and helps $G$ improve, and the goal is to train untill $D$ is no longer able to tell the two inputs apart.
+$G$ generates samples from a random noise distribution $p_z$. We call the resulting data distribution $p_g$; $D$ is fed both data from the training set ($x$) and the output from $G$ ($p_g$), and it's task is to figure out whether any given sample comes from the data (it belongs to $p_x$) or has been generated from $G$ (it belongs to $P_g$). In layman terms, we might say that it is $D$'s job to tell 'real' samples from 'fake' ones.
+
+%The feedback from $D$ is factors into the Error function and helps $G$ improve, and the goal is to train untill $D$ is no longer able to tell the two inputs apart.
 
 %As Goodfellow et al. \cite{Goodfellow2014} explain in their paper, $D$ is trained to maximize the likelihood of assigning the correct label to both data samples and samples from $G$; The generative network in turn is encouraged to generate data that is as similar as possible to the underlying distribution: this creates a race of sorts between the two networks, and a beneficial feedback loop between the two.
 
-Goodfellow et al.\cite{Goodfellow2014} explain the interplay between the two networks as a min-max game: the goal of $D$ is to minimize the error when evaluating samples, while the goal of $G$ is to maximize the error: the reason for this is that by maximizing the likelihood of $D$ failing, we are implicitly telling $G$ to generate samples as close as possible to the input data.
+Goodfellow et al.\cite{Goodfellow2014} explain the interplay between the two networks as a min-max game: the goal of $D$ is to maximize the likelihood of guessing correctly, while the goal of $G$ is to minimize that same likelihood (or to put it another way, $G$ wants $D$ to make more mistakes): the reason for this is that by minimizing the likelihood of $D$ guessing correctly, we are implicitly telling $G$ to generate samples as close as possible to the input data.
+
+Simply put, the two networks are trying to out-smart each other: every time $D$ tries to spot the 'fake' samples from $p_g$, while $G$ tries to improve more and more to make $D$'s job harder.
+
+The output of $D$ is a single value between 0 and 1 expressing the network's confidence on whether a sample came from $x$; Values of $D(sample)$ closer to 1 tend towards assigning a sample to the input data distribution.
+This race/competition between the two networks comes to an end when the output $D(x)$ stabilizes on $D(x)=0.5$, meaning that $D$ is no longer able to tell the two distributions apart.
+
+If we trained the network correctly, this will also mean that $p_x=p_g$, and thus we can conclude the training.
+
 One important thing to note is that we do not show $G$ any of the input data at any point: all that $G$ has access to is a random noise distribution and the error value for $D$; the Generator has to slowly shape that noise into data resembling the Discriminator's input, by using Gradient Descent (or Ascent in this case, since we are trying to maximize the function.)
+
+The process described above can be formalized in the following general equation:
+\begin{equation}
+ \min\limits_{G} \max\limits_{D} V(D,G)=\mathbb{E}_{x\sim p_{data}(x)}[\log{D(x)}]+\mathbb{E}_{z\sim p_z(z)}[\log{(1-D(G(z)))}] 
+\end{equation} 
 
 Because operation of the network relies on this tight feedback loop between $D$ and $G$, one needs to pay close attention to how quickly each network learn.
 The idea, as the authors in \cite{Goodfellow2014} point out, is to have a certain number of iterations of $D$ before we go ahead and adjust the Error for $G$; Conceptually, we might think of this as giving $D$ enough time to tell the real from the fake data reliably (or try), before iterating $G$ to counter $D$'s current strategy.
