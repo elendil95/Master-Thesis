@@ -246,3 +246,5 @@ main.pd
 
 #Project specific ignores
 main.pdf
+
+*.swp
