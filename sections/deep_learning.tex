@@ -106,7 +106,7 @@ Generative Adversarial Networks are a more complex architecture, composed of two
 
 The system works by employing a generative network $(G)$ and a discriminator network $(D)$:
 
-$G$ generates samples from a random noise distribution $p_z$. We call the resulting data distribution $p_g$; $D$ is fed both data from the training set ($x$) and the output from $G$ ($p_g$), and it's task is to figure out whether any given sample comes from the data (it belongs to $p_x$) or has been generated from $G$ (it belongs to $P_g$). In layman terms, we might say that it is $D$'s job to tell 'real' samples from 'fake' ones.
+$G$ generates samples from a random noise distribution $p_z$. We call the resulting data distribution $p_g$; $D$ is fed both data from the training set ($x$) and the output from $G$ ($p_g$), and it's task is to figure out whether any given sample comes from the data (it belongs to $p_x$) or has been generated from $G$ (it belongs to $p_g$). In layman terms, we might say that it is $D$'s job to tell 'real' samples from 'fake' ones.
 
 %The feedback from $D$ is factors into the Error function and helps $G$ improve, and the goal is to train untill $D$ is no longer able to tell the two inputs apart.
 
