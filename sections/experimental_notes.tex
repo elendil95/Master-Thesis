@@ -22,3 +22,16 @@ I am now ready to test this first sample, probably in HashCat. The plan is to ex
 The main goal is to compare the last 2 with each otheer and see what differnces (if any) there are.
 
 After that i would like to train again on the Libero set using NL Dictionaries in the training data (which i have yet to acquire), to see if there is an imporvement or regression in the precentage of password cracked.
+
+\subsection{Update (2-4-2019)}
+
+So after the whole hash debackle i decided to take up Niels' advice (at least for now). I generated MD5 Hashes for the passwords and cracked them in hashcat. I generated MD5 Hashes for the passwords and cracked them in hashcat.
+
+Running hashcat with the rockyou wordlist + best64 rules yielde 140.478 passwords (33.57\%)
+
+Running hascat with only the rockyou wordlist gave me the same exact number of passwords, which is kinda suspicious.
+
+Running hashcat with the italian password outputted from PassGAN gave me 146.352 passwords, a whole 1.4\% more!
+
+Running hashcat on a subset of the linkedIn passwords using rockyou+best64 yielded 20\% of passwords, which makes no fukin sense.
+
