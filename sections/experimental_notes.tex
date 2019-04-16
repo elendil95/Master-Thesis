@@ -26,7 +26,6 @@ After that i would like to train again on the Libero set using NL Dictionaries i
 \subsection{Update (2-4-2019)}
 
 So after the whole hash debackle i decided to take up Niels' advice (at least for now). I generated MD5 Hashes for the passwords and cracked them in hashcat. I generated MD5 Hashes for the passwords and cracked them in hashcat.
-
 Running hashcat with the rockyou wordlist + best64 rules yielde 140.478 passwords (33.57\%)
 
 Running hascat with only the rockyou wordlist gave me the same exact number of passwords, which is kinda suspicious.
@@ -34,4 +33,23 @@ Running hascat with only the rockyou wordlist gave me the same exact number of p
 Running hashcat with the italian password outputted from PassGAN gave me 146.352 passwords, a whole 1.4\% more!
 
 Running hashcat on a subset of the linkedIn passwords using rockyou+best64 yielded 20\% of passwords, which makes no fukin sense.
+
+\textbf{trim the target database and the wordlist to a certain lenght (e.g. 10 characters) to match the PassGAN output}
+\textbf{Also use the 89\%-20\% split from PassGAN for testing with both the GAN and HashCat, to account for over-fitting}
+The nice thing about the RockYou set is that its a giant paste, so theoretically at least it should give lesss of a bias than other sets that have been previously cracket with JtR and Hashcat 
+
+\begin{itemize}
+\item Read PassGAN again and construct the experiements in line with theirs.
+    \subitem Only using PAssGAN, hashcat and JtR; no markov models or RNNs
+
+\item trim the validation set and the wordlists to passwords <= 10 characters    
+\subitem Run the 2 tests again, but this time against the 20\% validation set
+\end{itemize}
+
+Compare plaintexts?
+Comprare the output of PassGAN with the target database?
+
+PassGAN testing methodology:
+- trim rockyou to strings =< 10 char
+- Train PAssGAN on RockYou with 80\%-20\%
 
