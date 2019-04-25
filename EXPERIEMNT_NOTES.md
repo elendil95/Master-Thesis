@@ -68,3 +68,4 @@ created a bigger PassGAN sample file with the same number of entries as RockYou:
 
 Try to crack the training set with big PassGAN and see if the results are significantly different than with small one: maybe the bigger size of the sample may lead to over-fitting when run on the training set?
 
+**Comparisons might be the most useful when you run Rockyou+gen2>big_passgan+gen2: what passwords have beeen found by passgan and not rockyou? because the percentile increase is likely to be small, hopefully there should be a pattern or something like it in the results** 
