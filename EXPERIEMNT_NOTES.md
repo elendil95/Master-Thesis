@@ -69,3 +69,12 @@ created a bigger PassGAN sample file with the same number of entries as RockYou:
 Try to crack the training set with big PassGAN and see if the results are significantly different than with small one: maybe the bigger size of the sample may lead to over-fitting when run on the training set?
 
 **Comparisons might be the most useful when you run Rockyou+gen2>big_passgan+gen2: what passwords have beeen found by passgan and not rockyou? because the percentile increase is likely to be small, hopefully there should be a pattern or something like it in the results** 
+
+## NL Testing
+
+* Repubblica 50%: 51,232 (63.40%) passwords found.
+* Repubblica 100%: 48,651 (60.20%) passwords found
+
+* ItwaC 50%: 50,133 (62.04%) of passwords found.
+* ItwaC 100%: 47,646 (58.96%) of passwords found.
+*
