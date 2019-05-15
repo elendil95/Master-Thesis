@@ -1,0 +1,20 @@
+\section{Data Concerns with the libero set}
+In the next section we will cover our experiments with PassGAN and the Libero dataset.
+before that however we need to address some fundamental issues with the dataset: First, our copy of the Libero database onnly contained plain texts passowrds, and secondly we were unable to verify the exact provenance of this data.
+A direct link to the data can be found on the \texttt{databases.today} website\footnote{\url{https://cdn.databases.today/Libero.it\%20900k.zip}}
+
+As regards the first issue, as mentioned in section \ref{sec:related_work} the Libero set is a JSON formatted file containing various pieces of information for each of user (above 600,000 user); common fields for each user include email addrress, user-name and internal User ID, but some users in the document also have a real name attached. As for the passowrds, each user object contains both a plaintext password and an MD5 hash, but upon closer inspection we find that there is a problem: the MD5 hash is the same for each user, an MD5 hash of the word \enquote{boomerang}.
+
+We have no idea as to why the uploader of the original cracker would choose to do something like that, and no clear evidence towards any particular reason; The following is purely our speculation, but we can imagine for example, that the attacker might decide to throw away the original hash and only keep the paintext of the password in order to keep the information for each user organized and more easily exploitable: since he exfiltrated not just password but also personal information like names and addresses for some of the users, one might imagine that it would be convenient to organize all the information for each user in a single JSON object.
+
+This alteration to what we might normally expected to find - a file containing both plain texts and hashes - made us question the autenticity of the data: while we were unable to find definitive proof, the number of acounts present in our file is roughtly consisstent with the number reported in \cite{libero_leak}; further more, the hash of the archive matches that of a VirusTotal report, that shows the archive first appeared on VirusTotal in December 2016, a couple of months after news broke about the Libero Mail security breach \cite{virus_total}.
+Italian news artices reporting on the incident came out around September  7th 2016, when Libero Mail sent an email to their customers informing them of the breach \cite{libero-news-wired,libero-news-tomhw,libero-news-fanpage}.
+Looking at the database file itself, its last modified timestamp is dated to the 25th of September, placing its origin somewhere closer to the date of the incident: Unfortunately neither the news articles nor Libero Mail themselves give an indication of when exactly the incident occourred, so its hard to judge the exact timeline of events; Upon reading the email that Libero Mail sent to customers on September 7th (available in \cite{libero-news-fanpage} in Italian), the language use suggests they may have been aware of the breach for a considerable amount of time before breaking the news to customers.
+
+The elements above leads to beleive that the data we have is geninuinely from the Libero leak, though ultimately its very hard to know for certain: these acounts and passwords have been included in a variety of other pastes ever since the incident, and if the original leak came from the Tor network like the Virus Total report tags seem to suggest, it might be inpossible to track down the original archive and/or creator.
+
+   
+%This fact however calls into question the autenticity of the data in our possession: Why have we used MD5 hashes in our experiments? and furthermore, how can we say that this data really belongs to the Libero.it leak that we claim?
+
+%We have no definitive answer for either question, but we have some circumstantial evidence
+

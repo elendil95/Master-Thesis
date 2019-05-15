@@ -1,6 +1,6 @@
 %Talk more about Thompson and morris, they introduce all the major techiques like hashing and salting at re-iterating the hash function.
 
-\section{Related Work}
+\section{Related Work}\label{sec:related_work}
 Both Password Cracking and deep learning are active areas of research developing at a rapid pace.
 
 In this section, we aim to give an overview of the relevant knowledge in these areas as it relates to our thesis.
@@ -59,6 +59,7 @@ If we were to apply such process before encrypting the users password with the s
 
 To conclude this discussion of password storage and security, let us discuss these same aspects as they concern our main dataset used in the thesis.
 
+%FOLLOWING LINE IS WRONG
 The Libero dataset is a JSON formatted document that contains information on roughtly 700 thousand users of the italian email provider Libero.it \cite{libero_leak}.\newline
 Each user record various fields the user id, user name, the associated emal address and the user's password: passwords are stored in both Plaintext as well as MD5 hash.
 

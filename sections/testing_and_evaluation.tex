@@ -83,14 +83,17 @@ This hypothesis will be proven wrong in section \label{subsec:nl-testing}.
 When running rockyou and PassGAN sequentially on the testing set using the gen2 ruleset, we get the overall best results with 79.01\% of password matched (63,847 passwords): PassGAN found an additional 4,713 passwords that were not matched by RockYou, consisting of mostly Proper names and italian words.
 
 \subsection{Natural language corpora} \label{subsec:nl-testing}
+%Find a more reader-friendly explanation for grammatical correctness, especially at the beginning  when defining the goal.
 Our next step was to include natural language data in the input and re-train the model, in the hope that this new input data would help the system generate more grammatically correct strings and thus improve the number of passwords matched.
 
+%Talk about how the words in the corpora are sorted and how you scrambled them.%Talk about how the words in the corpora are sorted and how you scrambled them.%Talk about how the words in the corpora are sorted and how you scrambled them.%Talk about how the words in the corpora are sorted and how you scrambled them.%Talk about how the words in the corpora are sorted and how you scrambled them.%Talk about how the words in the corpora are sorted and how you scrambled them.%Talk about how the words in the corpora are sorted and how you scrambled them.
 For this purpose we have chosen two different corpora of Italian Natural Language samples: 
 \begin{itemize}
     \item The Repubblica corpus: A corpus of words extracted from the italian newspaper "Repubblica", taken from articles published between 1985 and 2000 (roughly 380 million words).\cite{repubblica_corpus}
     \item The ItWaC corpus: A large 2 billion word corpus obtained by crawling internet sites under the \texttt{.it} domain. \cite{itwac_corpus}.  
 \end{itemize}
-
+%You can increase the number of guesses by generating more samples and increasing the size of the wordlist, though there might be diminishing returns at some point.
+%The nice thing about PassGAN is that you have theoretically infinite wordlists, even if the quality might be up and down.
 Both corpora were generated using the NoSketch Engine online tool \cite{nosketch_engine}, and we decided to sample two dataset from each corpus with the same number of entries as the libero password set. This was done to ease the process of organizing data for training PassGAN, and also because we were concerned about the impact that different ratios of password data to natural language might have on the resulting model.
 Previous research \cite{Melicher2016} has suggested that introducing Natural Language data into a system trained on passwords tends to generate a lot of noise during training, and our results turned out to be in line with that paper.
 
