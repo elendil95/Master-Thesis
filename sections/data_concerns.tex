@@ -1,4 +1,4 @@
-\section{Data Concerns with the libero set}
+\section{I did a big oof and i wanna talk about it}
 In the next section we will cover our experiments with PassGAN and the Libero dataset.
 before that however we need to address some fundamental issues with the dataset: First, our copy of the Libero database onnly contained plain texts passowrds, and secondly we were unable to verify the exact provenance of this data.
 A direct link to the data can be found on the \texttt{databases.today} website\footnote{\url{https://cdn.databases.today/Libero.it\%20900k.zip}}
@@ -13,8 +13,29 @@ Looking at the database file itself, its last modified timestamp is dated to the
 
 The elements above leads to beleive that the data we have is geninuinely from the Libero leak, though ultimately its very hard to know for certain: these acounts and passwords have been included in a variety of other pastes ever since the incident, and if the original leak came from the Tor network like the Virus Total report tags seem to suggest, it might be inpossible to track down the original archive and/or creator.
 
-   
-%This fact however calls into question the autenticity of the data in our possession: Why have we used MD5 hashes in our experiments? and furthermore, how can we say that this data really belongs to the Libero.it leak that we claim?
+The lack of hashed passwords in our copy of the Libero leak did not interfere with training of the PassGAN system, as the input data consisted of paintext passowrds, but it did pose a challenge for testing: in order to test PassGAN we needed to crack the Libero leak passwords using HashCat, and thus we needed to turn the paintext passwords back into hashed passwords.
+In ordered to do that we hashed the paintext passwords with MD5 and used the resulting file for testing: our choiche of MD5 was somewhat arbitrary, as there is no clear indication of how the passwords might have been stored in the Libero Mail database: we chose MD5 because the filename of the database file hinted that that might have been the hashing alorithm used originally, and also because the weakness of MD5 would make the cracking process much faster compared to using SHA-1 or SHA-256; the JSON file contained no explicit idication of salt usage, so we decided to not salt the password either. However for all the reasons idiscussed above, its possible that Libero Mail used a more secure storage method with different hashing algorithms and salts, we simply do not have enough information to express a judgement either way.
 
-%We have no definitive answer for either question, but we have some circumstantial evidence
+We are aware that this lack of information and authenticity hurts the applicability of this paper, because of these compromises we cannot claim that our results are 100\% applicable in the real world. Out argument would have been more robust if we had a dataset that more closely matched the original way in which passwords were stored, but we argue that this paper is not focused on the real-world applicability of Machine Learning systems like PassGAN for password cracking. 
+Rather, we view the Libero leak as an example, a source of data to evaluate PassGAN when used on non-english passwords and expeiment with the impact on Natural Language on password cracking.
+\newpage
+In order to prepare the data from the Libero leak for both training of PassGAN and subsequent testing we used a combination of UNIX shell commands, displayed below:
+
+\begin{lstlisting}[language=bash,numbers=left,stepnumber=1,breaklines=true,postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
+#Extract passwords from the databse file
+cat libero.it-lebero-poinx21.pxusers-plaintext-md5-2016-09-json-900k-users-extremely-private.txt|grep clearPassword |cut -d ":" -f 2 | awk '{gsub ("\"","");gsub(",","");print \$1}' > passwords.txt
+
+#Split the entire password dataset into 80\%/20\%
+head -n 534171 passwords.txt|shuf > train.txt
+tail -n 133542 passwords.txt|shuf > test.txt
+
+#Extract passwords that are 10 characters or less (needed for testing)
+grep -x '.\{1,10\}' test.txt > test_10c.txt
+
+#Generate MD5 hashes of the testing set for Hascat
+for i in $(cat test_10c.txt); do echo -n "$i"| md5sum | tr -d " -" >> attempt2/test_10c.hash; done
+
+#Generalized parameters for Hashcat
+hashcat -a 0 -m 0 --potfile-disable test_10c.hash $WORDLIST -r $RULESET -o out.txt
+\end{lstlisting}
 
