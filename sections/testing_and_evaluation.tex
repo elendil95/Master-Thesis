@@ -1,17 +1,44 @@
 \section{Testing and evaluation}
+
+%TODO:  * rewrite the 10c thing and introcude it at the end the sampling section
+%       * Re-organized all tasting explanation in the testing section, with a general introduction to it based on the diagram.
+%       * Delete table about training set and remove all mentions of it.
+%       * re-factor NL section
+
 %THE TRAINIG SET IS NOT REALLY RELEVANT TO THIS CHAPTER, CONSIDER REMOVING MENTIONS OF IT AND ONLY SHOW TESTS AGAINST THE TESTING SET.
 In this next section, we are going to evaluate the performance of the PassGAN system, as well as give a brief overview of our methodology and the experimental setup.
 
 \subsection{Experimental setup}
 Both training of the GAN and testing were carried out on a Linux machine running Debian stretch, equipped with a GTX 1070 graphics card, an i5-2500 CPU and 8 GB of system memory. 
-With this card, training of PassGAN took roughly eleven hours.
+With this card, training of PassGAN took roughly twelve hours.
 PassGAN was run on Python 2.7, running Tensorflow 1.12.0.%\\
 
 For testing we used the latest stable version of HashCat as of this writing (version 5.1.0). %and we observed a peak speed between 850 and 860MH/s (for reference, 1MH/s is equivalent to 1 million candidate passwords hashed and compared per second) %Reference  %The definition of MH is probably wrong
 
-\subsection{Testing the PassGAN system}
-In order to train the PassGAN system, we extracted the plain text passwords from the original file (which was formatted in JSON as it contained personal information beyond just the emails and passwords of the users), and split it up in two sets: a training set containing 80\% of the passwords (534,171 entries) and a testing set containing 20\% of the passwords (133,542 entries).
-We used the model trained on the bigger set to generate 1 million samples from PassGAN, that then served as the basis from our initial testing.
+Figure \ref{fig:testing_flowchart} below illustrates our overall process, which is divided in two Phases: 
+\begin{itemize}
+    \item A Training Phase, in which we train PassGAN on a given dataset and sample password candidates from the trained model.
+    \item A Testing Phase, in which we use HashCat to try and crack a subset of the Passwords in the libero leak.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+    \includegraphics[scale=0.8]{figures/testing_flowchart.png}
+    \caption{A diagram illustrating out general workflow for evaluating PassGAN, including Training and Testing}
+    \label{fig:testing_flowchart}
+\end{figure}    
+
+\subsection{Training and testing the PassGAN system}
+In order to train PassGAN we took the plain text passwords from the libero leak (667,714 passwords) and split them into two groups: 80\% of the passwords went into our Training Set, while the remaining 20\% of passwords went in the Testing set: The Training set is used to train PassGAN as can be seen in Step 1 of figure \ref{fig:testing_flowchart}, while the passwords in the Testing set are hashed with MD5 to serve as a cracking target for HashCat (this process can also be observed in the code snippet at the end of the previous section).
+
+PassGAN can additionaly be trained on Natural Language data, shown in a dotted box in figure \ref{fig:testing_flowchart}; elements shown within a dottet box are considered optional, they can be included or not. Natural Language data will be further discussed in secion \ref{subsec:nl-testing}.
+
+Once PassGAN is done training with a given dataset, it produces a training model that can be used to generate candidate passwords via sampling (Step 1.1 in the figure). This sample of candidate password will be the PassGAN wordlist used with Hashcat when testing, and we can choose to generate more or less candidate passwords when sampling: the tests listed in table \ref{tab:test-set} use a wordlist of 1 million password candidates, while tables \ref{tab:passgan-big} and \ref{tab:nl-results} use a wordlist of roughtly 14 million password candidates.
+
+
+
+%In order to train the PassGAN system, we extracted the plain text passwords from the original file (which was formatted in JSON as it contained personal information beyond just the emails and passwords of the users), and split it up in two sets: a training set containing 80\% of the passwords (534,171 entries) and a testing set containing 20\% of the passwords (133,542 entries).
+%We used the model trained on the bigger set to generate 1 million samples from PassGAN, that then served as the basis from our initial testing.
 
 Below is an example of samples that were produced by PassGAN at the very end of training: %Maybe i should take a sample from the last checkpoint instead?
 \begin{verbatim}
@@ -23,9 +50,9 @@ marcanalla  ACADCNA�N   leegenniki  vicaletto
 \end{verbatim}
 
 %Give a small eexample of one or two particular words and words in italian that resemble them.
-What we found particularly interesting was that while the samples showed the typical patterns exhibited by user-generated Passwords (numbers appended or pre-pended to words, so-called leet speak etc..), a majority of them also seemed to mimic Italian words and phrases: most of these words were meaningless, but nonetheless we speculated that the GAN might be trying to "learn" Italian as a side-effect of generating samples close to the input data distribution.
+What we found particularly interesting was that while the samples showed the typical patterns exhibited by user-generated Passwords (numbers appended or pre-pended to words, so-called leet speak etc..), a majority of them also seemed to mimic Italian words and phrases: most of these words were meaningless, but nonetheless we speculated that the GAN might be trying to \enquote{learn} Italian as a side-effect of generating samples close to the input data distribution.
 As an example the string \texttt{vicaletto} resemble the italian word \enquote{vicoletto} meaning \enquote{a narrow street}, while the string \texttt{princone} sounds vaguely like the italian word for pickaxe \enquote{piccone}. 
-
+\subsection{Testing the PassGAN system (Placeholder)}
 During our testing we tried to follow the same sort of methodology that Hitaj et al.\cite{PassGAN} used in their paper: as such, in our testing we used a subset of both our training  and our testing set, composed of passwords with a length of 10 characters or less. This was done in order to focus the scope of PassGAN, as during training we set the sequence length to 10.\\ %Bullshit you just wanna give yourself a leg up. %MAYBE the oassgan ppl trained the GAN on a 10c datasets as well? maybe i should re-train to test this.
 We believe this sub-set of ten-character is still representative of the whole set, as the vast majority of passwords in the Libero set are 10 characters or less: 461,442 (86.38\%) in the Training set, and 111,994 (83.86\%) in the Testing set. 
 
