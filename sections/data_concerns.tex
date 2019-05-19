@@ -41,24 +41,6 @@ for i in $(cat test_10c.txt); do echo -n "$i"| md5sum | tr -d " -" >> test_10c.h
 #Generalized parameters for Hashcat
 hashcat -a 0 -m 0 --potfile-disable test_10c.hash $WORDLIST -r $RULESET -o out.txt
 
-#NL stuff
-#Split each NL corpus into 80%-20% (optional)
-head -n 534172 Repubblica_700k.txt|cut -f1 > Repubblica-80.txt
-tail -n 133543 Repubblica_700k.txt|cut -f1 > Repubblica-20.txt
-
-#Create training set with password data + 50% of the Repubblica dataset
-shuf -n 267086 Repubblica-80.txt|cat - ../libero\ it\ July\ 2016/train.txt|shuf > libero+Repubblica-50.txt
-
-#Create training set with password data + all of the repubblica data
-shuf Repubblica-80.txt|cat - ../libero\ it\ July\ 2016/train.txt|shuf > libero+Repubblica.txt
-
-head -n 534172 ItWac_700k.txt|cut -f2 > ItWac_80.txt
-tail -n 133543 ItWac_700k.txt|cut -f1 > ItWac_20.txt
-
-shuf -n 267086 ItWac_80.txt|cat - ../libero\ it\ July\ 2016/train.txt|shuf > libero+ItWac-50.txt
-
-shuf ItWac_80.txt|cat - ../libero\ it\ July\ 2016/train.txt|shuf > libero+ItWac.txt
-
 #PassGAN parameters
 python2 train.py --output-dir output --training-data ../../NL-dict/ItWac/libero+ItWac-50.txt
 
