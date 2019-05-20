@@ -3,25 +3,29 @@ In the next section we will cover our experiments with PassGAN and the Libero da
 Before that however we need to address some fundamental issues with the dataset: First, our copy of the Libero database only contained plain texts passwords, and secondly we were unable to verify the exact provenance of this data.
 A direct link to the copy of the Libero leak used in this paper can be found on the \texttt{databases.today} website\footnote{\url{https://cdn.databases.today/Libero.it\%20900k.zip}}
 
-As mentioned in section \ref{sec:related_work} the Libero set is a JSON formatted file containing various pieces of information for each of user (around 700,000 user); common fields for each user include email address, user-name and internal User ID, but some users in the document also have a real name attached. As for the passwords, each user object contains both a plain text password and an MD5 hash.
+As mentioned in section \ref{sec:related_work} the Libero set is a JSON formatted file containing various pieces of information for each of user (around 700,000 users); common fields for each user include email address, user-name and internal User ID, but some users in the document also have a real name attached and other kinds of personal information.  As for the passwords, each user object contains both a plain text password and an MD5 hash.
 However something is wrong with the hashes: upon closer inspection we find that the MD5 hash is the same for each user, and that MD5 hash encodes the word \enquote{boomerang}.
 
 We have no idea as to why the uploader of the original cracker would choose to do something like that, and no clear evidence towards any particular reason; The following is purely our speculation, but we can imagine for example, that the attacker might decide to throw away the original hash and only keep the pain text of the password in order to keep the information for each user organized and more easily exploitable: since he exfiltrated not just passwords but also personal information like names and addresses for some of the users, one might imagine that it would be convenient to organize all the information for each user in a single JSON object and perhaps leave a placeholder hash in place of the original password hash.
 
 This alteration to what we might normally expected to find - a file containing both plain texts and hashes of those plain text passwords - made us question the authenticity of the data in our possession: while we were unable to find definitive proof, the number of accounts present in our file is roughly consistent with the number reported in \cite{libero_leak}; further more, the hash of the archive matches that of a VirusTotal report, that shows the archive first appeared on VirusTotal in December 2016, a couple of months after news broke about the Libero Mail security breach \cite{virus_total}.
 Italian news articles reporting on the incident came out around September 7th 2016, when Libero Mail sent an email to their customers informing them of the breach \cite{libero-news-wired,libero-news-tomhw,libero-news-fanpage}.
-Looking at the database file itself, its \emph{mtime} (the time-stamp of when the file was last modified) is dated to September 25th, placing its origin somewhere closer to the date of the incident. Unfortunately neither the news articles nor Libero Mail themselves give an indication of when exactly the incident occurred, so its hard to judge the exact timeline of events; Upon reading the email that Libero Mail sent to customers on September 7th (available in \cite{libero-news-fanpage} in Italian), the language used suggests Libero may have been aware of the breach for a considerable amount of time before breaking the news to customers.
+Looking at the database file itself, its \emph{mtime} (the time-stamp of when the file was last modified) is dated to September 25th, placing its origin somewhere closer to the date of the incident. 
+
+Unfortunately neither the news articles nor Libero Mail themselves give an indication of when exactly the incident occurred, so its hard to judge the exact timeline of events; Upon reading the email that Libero Mail sent to customers on September 7th (available in \cite{libero-news-fanpage} in Italian), the language used suggests Libero may have been aware of the breach for a considerable amount of time before breaking the news to customers.
 
 The elements above leads to believe that the data we have is likely to be from the original Libero leak, though ultimately its very hard to know for certain: these accounts and passwords have been re-used and included in a variety of other sources ever since the incident, and if the original leak came from the Tor network like the Virus Total report tags seem to suggest, it might be exceedingly hard to track down the original archive and/or its creator.
 
 The lack of hashed passwords in our copy of the Libero leak did not interfere with training of the PassGAN system, as the input data to PassGAN consisted of pain text passwords, but it did pose a challenge for testing: in order to test PassGAN we needed to crack the Libero leak passwords using HashCat, and thus we needed to turn the pain text passwords back into hashed passwords.
-In ordered to do that we hashed the pain text passwords with MD5 and used the resulting file for testing: our choice of MD5 was somewhat arbitrary, as there is no clear indication of how the passwords might have been stored in the Libero Mail database: we chose MD5 because the filename of the database file hinted that that might have been the hashing algorithm used originally, and also because the weakness of MD5 would make the cracking process much faster compared to using SHA-1 or SHA-256; the JSON file contained no explicit indication of salt usage, so we decided to not try to salt the password either. 
+In ordered to do that we hashed the pain text passwords with MD5 and used the resulting file for testing.\\
+Our choice of MD5 was somewhat arbitrary, as there is no clear indication of how the passwords might have been stored in the Libero Mail database: we chose MD5 because the filename of the database file hinted that that might have been the hashing algorithm used originally, and also because the weakness of MD5 would make the cracking process much faster compared to using SHA-1 or SHA-256; the JSON file contained no explicit indication of salt usage, so we decided to not try to salt the password either. 
 However for all the reasons discussed above, its possible that Libero Mail used a more secure storage method with different hashing algorithms and salts, we simply do not have enough information to express a judgement either way.
+As a final note, the fact that the user accounts are stored in JSON objects does not necessarily indicate if that was the original data structure used: the Libero Mail database might have used a more traditional database for all we know and the attacker simply organized the data he obtained as a JSON file; The inclusion of UIDs however might also be an indication that JSON was indeed the format used in the original database.
 
 We are aware that this lack of information and authenticity hurts the applicability of this paper, because of these compromises we cannot claim that our results are 100\% applicable in the real world. Out argument would have been more robust if we had a dataset that more closely matched the original way in which passwords were stored, but we argue that this paper is not focused on the real-world applicability of Machine Learning systems like PassGAN for password cracking. 
 Rather, we view the Libero leak as an example, a source of data to evaluate PassGAN when used on non-english passwords and experiment with the impact on Natural Language on password cracking.
 
-\newpage
+%\newpage
 In order to prepare the data from the Libero leak for both training of PassGAN and subsequent testing we used a combination of UNIX shell commands, displayed below:
 
 \begin{lstlisting}[language=bash,numbers=left,stepnumber=1,breaklines=true,postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
@@ -38,12 +42,12 @@ grep -x '.\{1,10\}' test.txt > test_10c.txt
 #Generate MD5 hashes of the testing set for Hascat
 for i in $(cat test_10c.txt); do echo -n "$i"| md5sum | tr -d " -" >> test_10c.hash; done
 
+#Generalized parameters for PassGAN
+python2 train.py --output-dir output --training-data $DATASET
+
+python2 sample.py --input-dir output --checkpoint output/checkpoints/checkpoint_95000.ckpt --output $WORDLIST -n $NUMBER_OF_SAMPLES #Usually set to 14344392
+
 #Generalized parameters for Hashcat
 hashcat -a 0 -m 0 --potfile-disable test_10c.hash $WORDLIST -r $RULESET -o out.txt
-
-#PassGAN parameters
-python2 train.py --output-dir output --training-data ../../NL-dict/ItWac/libero+ItWac-50.txt
-
-python2 sample.py --input-dir output --checkpoint output/checkpoints/checkpoint_95000.ckpt --output ~/Desktop/Hashcat_tests/passgan_itwac_50.txt -n 14344392 
 \end{lstlisting}
 
