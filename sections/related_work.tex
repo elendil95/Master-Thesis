@@ -65,7 +65,7 @@ Each user record various fields the user id, user name, the associated emal addr
 
 Now that we have a better notion of how passwords are stored, the next section will address how passwords are commonly cracked: specifically, we will use state of the art rule-based password crackers in order to explore the cracking process; to briefly elucidate on how these tools fit in the greater scope of the paper, PassGAN and other such Deep Learning systems can be seen as a complement to rule-based password crackers, as their output is used as input for rule-based tools in order to practically crack passwords. The interplay between these two sides will be explored in later sections.
 
-\subsection{Rule-Based password crackers} \label{hash_and_jtr}
+\subsubsection{Rule-Based password crackers} \label{hash_and_jtr}
 %Define rules firrst in the introduction
 
 Two common tools for password cracking are John The Ripper and \break \mbox{HashCat}\cite{john,hash_cat}: these tools take advantage of common patterns in user behaviour in order to optimize the cracking process: Both tools have a variety of techniques an attacker can employ, and we will briefly exemplify their capabilities using HashCat as an example \cite{hash_cat_wiki}:

@@ -1,4 +1,4 @@
-\section{Deep Learning}
+\subsection{Deep Learning}
 Deep Learning is a class of machine learning systems whose goal is to extract relevant features from a distribution of data. On an abstract level, Deep Learning systems take inspiration the structure of human biology, with multi-layer structures of nodes (Neurons): each layer might be thought of as a section of a brain recognizing a very specific element, and when all layers work in unison they can recognize and act upon high level features and categories.
 
 %Deep learning is used in many fields, and has achieved notable results in fields such as Computer Vision, Image Recognition and Natural Language Processing.%REFERENCE
@@ -33,7 +33,7 @@ Once both phases are completed the network has completed an iteration. The next 
 In this coming section we will cover two types of Deep Learning Neural Networks that are relevant in this paper: \emph{Recurrent Neural Networks} (RNNs) and  \emph{Generative Adversarial Networks} (GANs).
 \clearpage
 
-\subsection{Recurrent Neural Networks}
+\subsubsection{Recurrent Neural Networks}
 Recurrent Neural Networks are the simpler of the two network architectures; they are a kind of neural network specialized in working with data that has a temporal component.
 For instance if the network needs to predict the next letter or word in a sentence, it needs to know what came before. Another example might be a neural network that scales or edits videos, where the action to take on any given frame might be dependent on the frames that came before.
 
@@ -102,7 +102,7 @@ For some particular tasks such as Natural language generation, gradient decay ca
 %To dampen the effects of this bias one might employ Long-Short Term Memory cells (LSTM), a special kind on RNN neuron which can dynamically rank new information (and by extention, the content of its state) based on its relevance. LSTM ensures that important data is retained regardless on when it was learned, and thus diminishes the effect of the base RNN bias.\newline
 %It should be noted however that LSTM does not constitute a straight upgrade from the plain RNN architecture: it may be beneficial in certain cases, but decremental in others.
 
-\subsection{Generative Adversarial Networks}
+\subsubsection{Generative Adversarial Networks}
 Generative Adversarial Networks are a more complex architecture, composed of two discrete neural networks that are in competition with each other.
 
 The system works by employing a generative network $(G)$ and a discriminator network $(D)$:
