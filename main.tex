@@ -26,7 +26,7 @@
 \bibliography{mybib.bib}
 \pagestyle{fancy}
 \extramarks{\markboth}{}
-%\lhead{\markboth}
+\lhead{\markboth}
 \rhead{\thepage}
 \begin{document}
 \pagenumbering{gobble}
@@ -36,6 +36,7 @@
 \maketitle
 \cleardoublepage
 \pagenumbering{arabic}
+\input{macros.tex}
 \input{sections/abstract.tex}
 \cleardoublepage
 \input{sections/problem_formulation.tex}
