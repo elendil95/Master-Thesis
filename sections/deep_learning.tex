@@ -31,7 +31,7 @@ the weights of the connections between each neuron in the different layers, in a
 Once both phases are completed the network has completed an iteration. The next batch of data is then introduced and the process begins anew.
 
 In this coming section we will cover two types of Deep Learning Neural Networks that are relevant in this paper: \emph{Recurrent Neural Networks} (RNNs) and  \emph{Generative Adversarial Networks} (GANs).
-\clearpage
+%\clearpage
 
 \subsubsection{Recurrent Neural Networks}
 Recurrent Neural Networks are the simpler of the two network architectures; they are a kind of neural network specialized in working with data that has a temporal component.
@@ -85,7 +85,7 @@ Iteration number 2 $t=2$
     \caption{A simplified representation of a node in a Recurrent Neural Network}\label{fig:rnn_neuron}
     
 \end{figure}
-\clearpage
+%\clearpage
 Figure \ref{fig:rnn_neuron} illustrates the working of a RNN neuron: taking picture \ref{fig:DNN} as a starting point we can see the feedback loop of an RNN node at work.
 The first picture shows the state of three nodes in the network on iteration 1: During the feed forward phase the first neuron in the hidden layer one receives input $x$ from the input layer, processes it and passes it on to the consecutive layers; after processing, each hidden neuron saves its working values, and those values form the node's state.  
 
@@ -106,6 +106,13 @@ For some particular tasks such as Natural language generation, gradient decay ca
 Generative Adversarial Networks are a more complex architecture, composed of two discrete neural networks that are in competition with each other.
 
 The system works by employing a generative network $(G)$ and a discriminator network $(D)$:
+
+\begin{figure}[H]
+\centering
+    \includegraphics[scale=0.60]{figures/GAN_v2.png}
+    \caption{An illustration of the general structure on a Generative Adversarial Network}
+    \label{fig:gani-diagram}
+\end{figure}    
 
 $G$ generates samples from a random noise distribution $p_z$. We call the resulting data distribution $p_g$; $D$ is fed both data from the training set ($x$) and the output from $G$ ($p_g$), and it's task is to figure out whether any given sample comes from the data (it belongs to $p_x$) or has been generated from $G$ (it belongs to $p_g$). In layman terms, we might say that it is $D$'s job to tell 'real' samples from 'fake' ones.
 
@@ -134,3 +141,7 @@ Because operation of the network relies on this tight feedback loop between $D$ 
 The idea, as the authors in \cite{Goodfellow2014} point out, is to have a certain number of iterations of $D$ before we go ahead and adjust the Error for $G$; Conceptually, we might think of this as giving $D$ enough time to tell the real from the fake data reliably (or try), before iterating $G$ to counter $D$'s current strategy.
 
 The original paper indicates this ratio with $k$, and notes that increasing it grows the required computation significantly. In their experiments the authors used a $k$ value of one for performance reasons, while PassGAN defaults to a $k$ value of 10\cite{PassGAN}.
+
+\paragraph{PassGAN}
+
+
