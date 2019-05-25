@@ -5,7 +5,7 @@ Deep Learning is a class of machine learning systems whose goal is to extract re
 
 Deep Learning Systems are particularly useful because of their ability to extract high level features from data, especially features that are hard to define algorithmically by humans.
 
-Another peculiar features of such network is that no-one really knows exactly how the machine learns. There has been such research trying to understand what exactly each layer does and what exactly it learns, but this is still an open question.\newline %REFERENCE.
+%Another peculiar features of such network is that no-one really knows exactly how the machine learns. There has been such research trying to understand what exactly each layer does and what exactly it learns, but this is still an open question.\newline %REFERENCE.
 Because of the number of variables involved, it is hard to predict results might derive from a change in the initial condition; as a consequence of this uncertainty, the process of working with Deep Learning system is one of incremental change and experimentation. 
 
 Figure \ref{fig:DNN} shows the typical structure of a Deep Neural Network:
@@ -102,19 +102,20 @@ For some particular tasks such as Natural language generation, gradient decay ca
 %To dampen the effects of this bias one might employ Long-Short Term Memory cells (LSTM), a special kind on RNN neuron which can dynamically rank new information (and by extention, the content of its state) based on its relevance. LSTM ensures that important data is retained regardless on when it was learned, and thus diminishes the effect of the base RNN bias.\newline
 %It should be noted however that LSTM does not constitute a straight upgrade from the plain RNN architecture: it may be beneficial in certain cases, but decremental in others.
 
-\subsubsection{Generative Adversarial Networks}
+\subsubsection{Generative Adversarial Networks}\label{subsubsec:gans}
 Generative Adversarial Networks are a more complex architecture, composed of two discrete neural networks that are in competition with each other.
 
-The system works by employing a generative network $(G)$ and a discriminator network $(D)$:
+The system works by employing a generative network $(G)$ and a discriminator network $(D)$, and figure \ref{fig:gan-diagram} shows its general structure:
 
 \begin{figure}[H]
 \centering
     \includegraphics[scale=0.60]{figures/GAN_v2.png}
     \caption{An illustration of the general structure on a Generative Adversarial Network}
-    \label{fig:gani-diagram}
+    \label{fig:gan-diagram}
 \end{figure}    
+%Diagram is missing legend
 
-$G$ generates samples from a random noise distribution $p_z$. We call the resulting data distribution $p_g$; $D$ is fed both data from the training set ($x$) and the output from $G$ ($p_g$), and it's task is to figure out whether any given sample comes from the data (it belongs to $p_x$) or has been generated from $G$ (it belongs to $p_g$). In layman terms, we might say that it is $D$'s job to tell 'real' samples from 'fake' ones.
+As we can see in figure \ref{fig:gan-diagram}, $G$ generates samples from a random noise distribution $p_z$. We call the resulting data distribution $p_g$; $D$ is fed both data from the training set ($x$) and the output from $G$ ($p_g$), and it's task is to figure out whether any given sample comes from the data (it belongs to $p_x$) or has been generated from $G$ (it belongs to $p_g$). In layman terms, we might say that it is $D$'s job to tell 'real' samples from 'fake' ones.
 
 %The feedback from $D$ is factors into the Error function and helps $G$ improve, and the goal is to train untill $D$ is no longer able to tell the two inputs apart.
 
@@ -142,6 +143,33 @@ The idea, as the authors in \cite{Goodfellow2014} point out, is to have a certai
 
 The original paper indicates this ratio with $k$, and notes that increasing it grows the required computation significantly. In their experiments the authors used a $k$ value of one for performance reasons, while PassGAN defaults to a $k$ value of 10\cite{PassGAN}.
 
-\paragraph{PassGAN}
+\subsubsection{PassGAN}
+% should i mention IWGANs at the beginning? maybe this is a question for Niels.
+PassGAN is a generative adversarial network built to generate password candidates for the purposes of password cracking: In it, $G$ and $D$ compete in an attempt to generate passwords that closely mimic the real passwords fed to the network as input data.
 
+In this section, we will go over some of the important hyper-parameters used with PassGAN and some other concepts, that will become relevant is section \ref{sec:testing_and_evaluation} where we put PassGAN to the test.
 
+In order to train PassGAN, we use the passwords from the Libero dataset mentioned in section \ref{subsec:password_cracking}. As is common with deep neural network training, we split our data into two subsets of 80\% and 20\%: the 80\% set that contained the majority of the password would be used for Training, while the 20\% set would be used for Testing. 
+
+ The Training phase is what we covered in section \ref{subsubsec:gans}, but we did not talk about Testing in this chapter: generally speaking testing is the practice of presenting a newly-trained deep learning system with new data it has not seen before, in order to test whether the model performs as expected outside of the limited scope of the training data.
+
+For some simpler machine learning systems like image classifiers (a deep learning system trained to recognized hand-written digits is a very common example), all image data is labelled with what they are supposed to be (\emph{e.g} the label might say what digit a particular image is supposed to be): if we split our data 80\%-20\% like we mentioned before, at the end of training we can present our network with the 20\% of data we put aside and use the labels to quantify whether it can guess as accurately as we expect. As an example of why Testing is needed, one of the risks associated with deep learning systems is \emph{over-fitting}: over-fitting is a phenomenon wherein the network is \enquote{over trained} so to speak, it performs amazingly on the training data but is not flexible enough to maintain that performance with real data outside the narrow scope of training. Intuitively, we might think of it as the network being hyper-focused on the minute characteristics of the training data: it works very well in that specific context but it does not scale well, the features that the network picks up on might not be abstract or general enough to apply in a general case. 
+
+We are discussing the testing process in some depth because there is an important difference between PassGAN and image classifiers: The testing process described above simply does not work with PassGAN.
+This is because PassGAN does not simply classify existing data, it creates new and unique data with potentially unseen characteristics: because we do  not know what kind of string PassGAN will generate in advance, we cannot write labels for them; even if we were able to do so, we think that the nature of GANs is at odds with this approach since the interplay between $G$ and $D$ provides the same sort of feedback as labels do on image classifiers.\\
+This lack of an easily defined testing methodology or metrics are common among generative deep learning systems, RNNs focused on data generation have a similar issue.
+
+Because of the reasons mentioned above, PassGAN has no built-in method for testing: instead, we have to rely on external methods to test the model's performance.
+In this paper we want to test cracking performance, so we use the password candidates produced by PassGAN in rule-based password crackers: this process will be covered in more detail in section \ref{sec:testing_and_evaluation}, for now we will say that we used our 20\% testing password set as the target of our cracking attempts with HashCat and the password candidates coming from PassGAN.\\
+To clarify we followed the same testing methodology as Hitaj et  al. \cite{PassGAN}, just using different datasets for training and testing.
+\cleardoublepage
+Shifting our discussion to the hyper-parameters used with PassGAN, they are values one can change to influence how the training is done. All of the hyper-parameters present in Hitaj et al. \cite{PassGAN} were kept to their default values in this paper. We will briefly touch upon some of them, explain what they do and mention how they influenced our testing of PassGAN.
+%IDK if the following part is accurate really.
+
+There are three hyper-parameters that are relevant to this discussion: The first is \emph{sequence length}, a number that defines the maximum length of password candidates generated by PassGAN; this value is set to 10 by default. Sequence length is important because will influence what kind of passwords we use for testing, for the explanation of how sequence length comes into play the reader may look at section \ref{subsec:passgan-testing}.\\
+Another important hyper-parameter is the number of total iterations, which defines for how long PassGAN should train: this number is set to $200000$, but PassGAN never reaches the last iteration during our tests: Hitaj. et al. arrived at this value after several experiments as the ideal length of training for their case, however in our paper we have a considerably smaller training dataset of around 530,000 passwords (80\% of the Libero set), so we have noticed that our training stops around iteration number 190000 when PassGAN runs out of input data.
+
+In hindsight we should have tried to tweak the iteration count to optimize for our particular amount of data: we don't really know if this had a negative impact on the resulting model, the extra iterations might have lead to over fitting but we would not be able to tell as we did not have another model trained with a lower number of iterations as a term of comparison.\\
+This might be seen as one of the downside of using a generative system like a GAN, testing requires a more elaborate setup and its harder to spot problems when compared to simpler systems with built-in testing methods. 
+
+The third relevant hyper-parameter is $k$, one that we have already discussed at the end of the previous section. As a reminder, $k$ is a value that determines how many iterations of $D$ happen for every iteration of $G$. In effect, it controls how quick the feedback loop between the two systems is and how fast PassGAN learns and adapts. We have not modified $k$ in our testing, but we mention it again here because we think it is key in understanding how PassGAN works. 
