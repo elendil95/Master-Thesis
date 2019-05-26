@@ -163,7 +163,18 @@ This lack of an easily defined testing methodology or metrics are common among g
 Because of the reasons mentioned above, PassGAN has no built-in method for testing: instead, we have to rely on external methods to test the model's performance.
 In this paper we want to test cracking performance, so we use the password candidates produced by PassGAN in rule-based password crackers: this process will be covered in more detail in section \ref{sec:testing_and_evaluation}, for now we will say that we used our 20\% testing password set as the target of our cracking attempts with HashCat and the password candidates coming from PassGAN.\\
 To clarify we followed the same testing methodology as Hitaj et  al. \cite{PassGAN}, just using different datasets for training and testing.
-\cleardoublepage
+
+%This definition is kinda shit tbh
+Another important concept to introduce is that of a \emph{Model}: we have used this term already several times, but to clarify we shall introduce it properly here.\\
+A model is what results at the end of training of a neural network: in essence it is a snap-shot of all the weights and parameters present in the network, that taken together tell the network what to do with a given input. Once we load a model into a neural network we can use it to process new data, and we tests the model with our testing data to verify that it is as accurate new data as it was with the training data.
+
+PassGAN's approach to models is rather common, and it works as follows: by default PassGAN is programmed to take a model snap-shot every 5000 iterations (called a checkpoint in the software), potentially allowing us to use a partially trained model if we so desire; if we want to use the final model, we simply choose the latest snap-shot available.\\
+Models are then used when generating password candidates through sampling, where we tell PassGAN what model we would like to use for generating our passwords and how many we want. Generally we will want to use the latest model available to get the best possible results, but because we have access to snap-shots from various points in the training process we may choose to use an older, partial model in order to observe how the kinds of passwords PassGAN generates change over the course of training.
+
+The sampling process will be explained better in section \ref{subsec:passgan-training}, but as a reference in all our tests we used the latest snap-shot/model available and we generated either 1.000.000 password candidates or 14.000.000 password candidates.
+Note that the number of models available changes depending on the amount of data and the length of training: using less data for training will result in fewer iterations and thus less snap-shots available, and vice versa.
+
+%\cleardoublepage
 Shifting our discussion to the hyper-parameters used with PassGAN, they are values one can change to influence how the training is done. All of the hyper-parameters present in Hitaj et al. \cite{PassGAN} were kept to their default values in this paper. We will briefly touch upon some of them, explain what they do and mention how they influenced our testing of PassGAN.
 %IDK if the following part is accurate really.
 
