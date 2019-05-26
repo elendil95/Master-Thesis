@@ -1,15 +1,15 @@
-\section{Discussion}
+\section{Discussion}\label{sec:discussion}
 
 In this coming section we are going to discuss some of the shortcomings of this thesis and talk about avenues for future work.
 
 While we were overall pretty happy with the results we obtained from our testing, we feel that there are some deep-seated problems in our arguments that we need to address:
 
-First, its the fact that we did not try to crack the Libero passwords using the pre-trained PassGAN model that Hitaji et al. \cite{PassGAN} used in their paper: we think this is a rather important omission, as doing that would have given us a base-line performance that we could compare our PassGAN model to.  This comparison would have allowed us to determine what were the effects of using a model trained on largely english-language passwords to crack a dataset of italian passwords. We feel such an experiment would have given us much better footing when we claim to be evaluating PassGAN using italian passwords. As it stands we are still evaluating PassGAN in that way, but not having the reference point of that performance comparison makes our evaluation less meaningful.
+First, its the fact that we did not try to crack the Libero passwords using the pre-trained PassGAN model that Hitaji et al. \cite{PassGAN} used in their paper: we think this is a rather important omission, as doing that would have given us a base-line performance that we could compare our PassGAN model to.  This comparison would have allowed us to determine what were the effects of using a model trained on largely english-language passwords to crack a dataset of italian passwords. We feel such an experiment would have given us much better footing when we claim to be evaluating PassGAN using italian passwords and answering the questions in our problem formulation. As it stands we are still evaluating PassGAN in that way, but not having the reference point of that performance comparison makes our evaluation less meaningful.
+This omission is due mostly to time constrains, but also because during our testing process we were wholly focused on the impact of natural language on PassGAN's performance: we really did believe that it would improve performance, and we overlooked some other important experiments such as the one described above that would strengthen our arguments in pursuit of the natural language experiments. 
 
-Since the beginning the goal of this paper was to test the impact of natural language on PassGAN, and because we were so focused on that objective we skipped over the important experiment outlined above; 
-speaking more broadly we gradually convinced ourselves that natural language would have a positive impact on the model's performance, and in a way we shaped the paper expecting to arrive at that conclusion:
-when we got back the results and realised that the numbers disproved our hypothesis, we gradually realized that our contributions were not as solid as we had hoped.
-
+%Since the beginning the goal of this paper was to test the impact of natural language on PassGAN, and because we were so focused on that objective we skipped over the important experiment outlined above; 
+%speaking more broadly we gradually convinced ourselves that natural language would have a positive impact on the model's performance, and in a way we shaped the paper expecting to arrive at that conclusion:
+%when we got back the results and realised that the numbers disproved our hypothesis, we gradually realized that our contributions were not as solid as we had hoped.
 Speaking of avenues of further work, there were some aspects of our thesis that we would have liked to expand upon:
 When discussing the impact of Natural Language data on PassGAN we mentioned that different ratios of password data to Natural Language data affect the model performance in different ways: while we observed 
 that PassGAN performs marginally worse when using equal parts of password data and NL data, it would have been interesting to explore this further: we would have been interested in researching what is the ideal ratio to maximize PassGAN performance. \\
@@ -22,4 +22,5 @@ indefinitely, so we feel that such research might be beneficial in understanding
 Looking back at our work in this paper, we also realise that it might have been a good idea to attempt to reproduce the findings in the PassGAN paper: it would have helped us to better ground our discussion 
 in the context of their paper, but overall we do not think such attempts at reproduction are strictly necessary: while we have certainly looked at Hitaji et al.'s data to give us a broad indication of performance, we were using a different dataset and we don't believe that it would have been meaningful to directly compare our results with theirs.
 
-  
+Our favourite way to build on this paper would no doubt be to do a follow-up study looking at passphrases, as a way to test the limits of PassGAN as a language-sensitive specialist cracker: one might make the case that by their nature, passphrases are more subject to grammatical and syntactical rules, and it would be interesting to repeat the experiments in this thesis using passphrases as a dataset. \\
+As \cite{Melicher2016} states, rule-based password crackers tend to have a ceiling on the length and complexity of passwords they can efficiently crack: A similar study using passphrases might also test the limits of rule-based tools in such a way, that we might find PassGAN to be a more effective tool for this particular niche. The big problem we see with this research is the lack of data: passphrases are not usually widely employed by companies in their password policies, and there is a lower chance of leaked passphrases datasets being available to the public.  

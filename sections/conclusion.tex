@@ -1,0 +1,28 @@
+\section{Conclusion}
+%Small problem: conclusions 2 and 4 are not mine, im pretty sure they are things that the PAssgAN paper said before me.
+In this thesis we have looked at the impact that language has on PassGAN in various ways:
+To conclude our thesis, we would like to answer the questions posed in our problem formulation all the way back in section \ref{sec:introduction}.
+
+\begin{itemize}
+\item \emph{How does PassGAN perform when cracking Italian passwords?} %Implies: is it better or worse when using the pre-trained model as opposed to a new model trained on italian passwords?
+
+Overall we can say that PassGAN performs worse than rule-based password crackers when looking at the total number of passwords found as we show is section \ref{subsec:passgan-testing}, but this fact was already true for Hitaj. et al. \cite{PassGAN} when considering PassGAN alone.
+That said however there are also benefits to using PassGAN, as it seems useful in finding particularly complex passwords.
+
+Overall we sadly don't have a full picture of PassGAN's performance with Italian passwords, because as we said in section \ref{sec:discussion} we were not able to test PassGAN's pre-trained model used in \cite{PassGAN} against the Libero passwords.
+
+\item \emph{Does difference in language have an impact on the passwords found by PassGAN and state-of-the-art password crackers?}
+
+We would say yes: even if PassGAN perform worse than traditional password crackers in terms of total number of passwords found, we argue that there is a difference in the kinds of passwords that can be found by using PassGAN over HashCat: this was particularly evident when running the two together as we did in section \ref{subsubsec:potfile-enable}.      
+
+\item \emph{How does the inclusion of natural language data during training affect PassGAN's performance?}
+
+From our experience, the inclusion of natural language data does not seem to have a positive impact on the performance of PassGAN: in fact, it had a slightly negative impact. Overall PassGAN's Performance using NL data can broadly be considered on par with a PassGAN model trained with just passwords.
+ 
+\item \emph{Ultimately, can PassGAN be a useful tool to use when approaching password data from a particular language area?} %Or are rule-based tools always better
+
+We believe PassGAN can indeed be a useful tool when approaching passwords from another language area: while its applicability is narrow (we would consider it more as a specialist tool, useful for approaching more complex passwords that may use specific language or refer to a specific culture), we think it can be rather useful when used in conjunction with more generalists rule-based passwords crackers. We find ourselves in agreement with Hitaj, et al. on this point.    
+\end{itemize}
+
+%Another Interesting avenue of research could be to test the limits of PassGAN as a language-sensitive specialist cracker: specifically we think it might be interesting to tackle the subject of passphrases using PassGAN: one might make the case that by their nature, passphrases are more subject to grammatical and syntactical rules, and it would be interesting to repeat the experiments in this thesis using passphrases as a dataset. \\
+%As \cite{Melicher2016} states, rule-based password crackers tend to have a ceiling on the length and complexity of passwords they can efficiently crack: A similar study using passphrases might also test the limits of rule-based tools in such a way, that we might find PassGAN to be a more effective tool for this particular niche. The big problem we see with this research is the lack of data: passphrases are not usually widely employed by companies in their password policies, and there is a lower chance of leaked passphrases datasets being available to the public.
