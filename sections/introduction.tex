@@ -1,4 +1,4 @@
-\section{Introduction}
+\section{Introduction}\label{sec:introduction}
 \subsection{Motivation}
 The aim of this thesis is to evaluate the paper \enquote{PassGAN: A Deep Learning Approach for Password Guessing}\cite{PassGAN}, by testing the Deep Learning system described in the paper with a different dataset of leaked passwords from Italy\cite{libero_leak} (referred to as the Libero dataset in this paper). Te aim is to test whether there are any differences in performance when PassGAN is used to crack a database from a non-english source.
 
@@ -14,9 +14,12 @@ On the other hand, in our early attempts to train PassGAN on the Libero dataset 
 
 In conclusion, we believe this research might contribute some insight in the role that grammatical features have in password cracking, when this task is approached using Deep Neural Networks: many papers on the subject (including \cite{PassGAN} and \cite{Melicher2016}) ask the question of whether Deep Learning systems are expressive enough to generate novel passwords and thus yield results that are not achievable with traditional password cracking methods, and we see this research as part of this ongoing quest into exploring the capabilities and limits of Deep Learning-based password crackers.
 
-\subsection{Problem formulation}
+\subsection{Problem formulation}\label{subsec:problem-formulation}
 This Thesis aims to answer the following questions:
 \begin{itemize}
-\item How does a difference in language (English )
+\item How does PassGAN perform when cracking italian passwords? %Implies: is it better or worse when using the pre-trained model as opposed to a new model trained on italian passwords?
+\item Does difference in language have an impact on the passwords found by PassGAN and state-of-the-art password crackers?    
+\item How does the inclusion of natural language data during training affect PassGAN's performance?
+\item Ultimately, can PassGAN be a useful tool to use when approaching password data from a particular language area? %Or are rule-based tools always better    
 \end{itemize}
 
