@@ -77,7 +77,8 @@ Touching upon the wordlist and rules used, they are also depicted in figure \ref
 
 The RockYou wordlist contains more than 14 million passwords, all of which come from various data breaches that have been compiled into one resource; it contains password of varying length and complexity, and as such should provide a good performance baseline for rule-based crackers. The best64 rules file contains around 70 mangling rules, while the genrated2 rules file contains more than 65,000. 
 
-The tables below will illustrate the results of our tests attacking the cracking target with different combination of Wordlists and rules. To clarify, we decided early on to use mangling rules also when testing password samples from PassGAN, since they greatly increased the number of passwords found compared to just using a wordlist. %If you wanna put the results for huge passgan wordlist here is where they go
+The tables below will illustrate the results of our tests attacking the cracking target with different combination of Wordlists and rules. To clarify, we decided early on to use mangling rules also when testing password samples from PassGAN, since they greatly increased the number of passwords found compared to just using a wordlist. 
+To the best of our understanding Hitaj. et al. have not used rules in their evaluation of PassGAN, but instead have chosen to generate a huge number of password candidates and use PassGAN alone to match passwords in the cracking target. We have also briefly tried this approach, our experience with it will be detailed in section \ref{subsubsec:huge-wordlists}}%If you wanna put the results for huge passgan wordlist here is where they go
 %This is not something that Hitaji and al. seem to have done, they seem to have used only PassGAN-generated wordlist to crack their target db. We tried and we got really shit results
 
 As a final note, HashCat's default behaviour is to cache passwords found during an attack in what the HashCat manual calls a \emph{potfile}, so that if an attacker chooses to approach the target using a different wordlist or a different set of rules, no time is wasted cracking passwords that were already found previously; because using different rule sets can greatly affect the efficiency of cracking, this form of caching allow an attacker to crack more passwords by combining different approaches.
@@ -89,7 +90,7 @@ In order to test the performance of each wordlist and rule combination separatel
 \textbf{\emph{Wordlist/Ruleset}} & \textbf{-} & \textbf{Best64} & \textbf{Generated2} \\ \hline
 \textbf{Rockyou}          & 19,215 (23.78\%) & 30,170 (37.33\%) & 59,134 (73.18\%) \\ \hline
 \textbf{PassGAN}          & 4,637 (5.74\%) & 11,053 (13.68\%) & 34,896 (43.18\%) \\ \hline
-\end{tabular}}
+\end{tabular}
 \caption{A comparison of the number of passwords found in the cracking target by RockYou and PassGAN,  using a 1 million wordlist for PassGAN}
 \label{tab:test-set}
 \wfill
@@ -106,7 +107,7 @@ In order to test this hypothesis we used our existing PassGAN model to generate 
 \textbf{\emph{Wordlist/Ruleset}} & \textbf{-} & \textbf{Best64} & \textbf{Generated2} \\ \hline
 \textbf{Rockyou}          & 19,215 (23.78\%) & 30,170 (37.33\%) & 59,134 (73.18\%) \\ \hline
 \textbf{PassGAN}          &  10,735 (13.28\%) & 20,638 (25.54\%) & 48,751 (60.33\%) \\ \hline
-\end{tabular}}
+\end{tabular}
 \caption{A comparison of the number of passwords in the cracking target found by RockYou and PassGAN, using a 14 million wordlist for PassGAN} 
 \label{tab:passgan-big}
 \end{table}
@@ -118,6 +119,26 @@ As table \ref{tab:passgan-big} shows, PassGAN found roughly 15\% more passwords 
 Now that we had an idea of the performance of each method, we wanted to see what was the maximum number of passwords we could find by combining the two approaches (RockYou and PassGAN):
 In order to do this we took the best performing ruleset (generated2), and we performed two rounds of cracking with caching enabled. First we run RockYou with the generated2 ruleset, that yielded the same results shown in Table \ref{tab:passgan-big} for that particular combination; next we tried PassGAN plus generated2, which yielded a final result of 63,847 passwords found (79.01\% of the cracking target). Running the two approaches in combination seems to definitely be more affective that using PassGAN alone, as there are many passwords that PassGAN cannot find but that are cracked by the RockYou wordlist.
 Furthermore when we look at the two lists of cracked passwords, we can notice around 5,000 unique passwords that were matched by PassGAN but not Rockyou, showing that PassGAN might have some potential as a tool to close in on more difficult passwords that have a specific linguistic provenance. Looking at some of these unique passwords, they mostly consist of proper names and more obscure italian words.
+
+\subsubsection{Testing the limits of PassGAN wordlist size}\label{subsubsec:huge-wordlists}
+As we said previously Hitaj. et al. \cite{PassGAN} don't seem to have used rules when testing PassGAN: instead they seem to have taken a different approach, taking advantage of the fact that PassGAN can generate arbitrary numbers of password candidates from a trained model; these password candidates may not match the target as well as the passwords in an established wordlist like RockYou, but PassGAN can generate vast quantities of them: thus Hitaj. et al chose a \enquote{quantity over quality} approach.
+
+We were interested in seeing how such huge wordlists would perform without the help of rules, so we run a couple of tests: we took our existing PassGAN model, our standard cracking target \texttt{test\_10c}, and we generated three new wordlist for PassGAN: one with 50 million entries, one with 100 million entries And finally one with roughly 196 million entries. 
+The reason why we chose these 3 steps is simple: as we can see in tables \ref{tab:test-set} and \ref{tab:passgan-big}, going from 1 million entries to 14 million entries yielded 15\% more passwords, so we wanted to see if testing a wordlist with $14^2$ million passwords would yield roughly 15\% more results compared with table \ref{tab:passgan-big}. The 50 million and 100 million wordlists are intermediate steps that can give us clues on how the number of passwords scales with wordlist size.
+%The 50 million wordlist managed to crack 13.898 passwords (17.20\% of the cracking target), while the 100 million wordlist managed to crack 15.669 passwords (19.39\% of the target).\\
+%While the increase between the two
+\begin{table}[H]
+\centering    
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{\emph{Wordlist/Ruleset}} & \textbf{-} & \textbf{Best64} & \textbf{Generated2} \\ \hline
+\textbf{PassGAN (50 million passwords)}          & 13.898 (17.20\%) & - & - \\ \hline
+\textbf{PassGAN (100 million passwords)}          & 15.669 (19.39\%) & - & - \\ \hline
+\textbf{PassGAN (200 million passwords)}          & 17.523 (21.68i\%) & - & - \\ \hline
+\end{tabular}
+\caption{A comparison of the number of passwords found by just PassGAN using different wordlist sizes and no mangling rules} 
+\label{tab:passgan-big}
+\end{table}
 
 \subsection{Training PassGAN with Natural Language corpora} \label{subsec:nl-testing}
 %Find a more reader-friendly explanation for grammatical correctness, especially at the beginning  when defining the goal.
