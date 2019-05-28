@@ -124,9 +124,8 @@ Furthermore when we look at the two lists of cracked passwords, we can notice ar
 As we said previously Hitaj. et al. \cite{PassGAN} don't seem to have used rules when testing PassGAN: instead they seem to have taken a different approach, taking advantage of the fact that PassGAN can generate arbitrary numbers of password candidates from a trained model; these password candidates may not match the target as well as the passwords in an established wordlist like RockYou, but PassGAN can generate vast quantities of them: thus Hitaj. et al chose a \enquote{quantity over quality} approach.
 
 We were interested in seeing how such huge wordlists would perform without the help of rules, so we run a couple of tests: we took our existing PassGAN model, our standard cracking target \texttt{test\_10c}, and we generated three new wordlist for PassGAN: one with 50 million entries, one with 100 million entries And finally one with roughly 196 million entries. 
-The reason why we chose these 3 steps is simple: as we can see in tables \ref{tab:test-set} and \ref{tab:passgan-big}, going from 1 million entries to 14 million entries yielded 15\% more passwords, so we wanted to see if testing a wordlist with $14^2$ million passwords would yield roughly 15\% more results compared with table \ref{tab:passgan-big}. The 50 million and 100 million wordlists are intermediate steps that can give us clues on how the number of passwords scales with wordlist size.
-%The 50 million wordlist managed to crack 13.898 passwords (17.20\% of the cracking target), while the 100 million wordlist managed to crack 15.669 passwords (19.39\% of the target).\\
-%While the increase between the two
+The reason why we chose these three steps is simple: as we can see in tables \ref{tab:test-set} and \ref{tab:passgan-big}, going from 1 million entries to 14 million entries yielded more than double the number of passwords when not using rules, so we wanted to see if testing a wordlist with $14^2$ million passwords would yield roughly the same increase conmpared to the results shown in table \ref{tab:passgan-big}. The 50 million and 100 million wordlists are intermediate steps that can give us clues on how the number of passwords scales with wordlist size.
+
 \begin{table}[H]
 \centering    
 \begin{tabular}{|l|c|c|c|}
@@ -134,11 +133,26 @@ The reason why we chose these 3 steps is simple: as we can see in tables \ref{ta
 \textbf{\emph{Wordlist/Ruleset}} & \textbf{-} & \textbf{Best64} & \textbf{Generated2} \\ \hline
 \textbf{PassGAN (50 million passwords)}          & 13.898 (17.20\%) & - & - \\ \hline
 \textbf{PassGAN (100 million passwords)}          & 15.669 (19.39\%) & - & - \\ \hline
-\textbf{PassGAN (200 million passwords)}          & 17.523 (21.68i\%) & - & - \\ \hline
+\textbf{PassGAN (196 million passwords)}          & 17.523 (21.68i\%) & - & - \\ \hline
 \end{tabular}
 \caption{A comparison of the number of passwords found by just PassGAN using different wordlist sizes and no mangling rules} 
-\label{tab:passgan-big}
+\label{tab:passgan-huge}
 \end{table}
+
+While the increment in passwords found between each of the three wordlists in table \ref{tab:passgan-huge} is small, overall comparing the 196 million wordlists with the first column of table \ref{tab:passgan-big} shows a substantial jump in performance of about 60\% more passwords found.
+Whats more, 21.68\% is relatively close to the number of passwords found by RockYou: if we assume that the growth rate between 50 million and 196 million password candidates holds, we should be able to match the number of passwords found by RockYou with about 300 million password candidates.
+
+While we consider these results fascinating, they can be mis-leading in the context of the PassGAN paper: in order to outperform HashCat+genenerated2, Hitaj. et al had to generate around $10^{9}$ password candidates, which if far more than what we have shown here.
+
+We understand why they chose this approach, they saw mangling rules as a hand-coded representation of password features and PassGAN as a tool that autonomously learns those features.
+PassGAN is seen as a potential replacement for rule-based crackers in \cite{PassGAN}, so it makes sense that Hitaj. et all did not use mangling rules with PassGAN:
+
+We would argue however than when approaching a set of passwords in another language, this mentality starts to become less relevant: in such a context we feel that the two tools complement each other, they have different roles that do not overlap as much; we see the use of rules with PassGAN as a useful tool that lessen the negative aspects of PassGAN (namely the amount of time and processing power required to train and sample such huge amounts of password candidates), while still reaping the benefits of machine learning systems such as the adaptability to the language of the dataset.
+
+In conclusion, we think the best approach might be similar to what we have done in this section: generate enough samples to match the performance of a commonly used wordlist such as RockYou, and then use PassGAN with rules to match a sizable majority of the passwords while retaining language-specific features.
+
+PassGAN can out-perform any rule-based cracker given enough time and storage, but do not know is the trade-off in terms of computation time and storage space is worth it given that PassGAN with rules can often perform similarly and be \enquote{good enough}. 
+
 
 \subsection{Training PassGAN with Natural Language corpora} \label{subsec:nl-testing}
 %Find a more reader-friendly explanation for grammatical correctness, especially at the beginning  when defining the goal.
@@ -160,7 +174,8 @@ For this purpose we have chosen two different corpora of Italian Natural Languag
 
 %You can increase the number of guesses by generating more samples and increasing the size of the wordlist, though there might be diminishing returns at some point.
 %The nice thing about PassGAN is that you have theoretically infinite wordlists, even if the quality might be up and down.
-Both corpora were generated using the NoSketch Engine online tool \cite{nosketch_engine}, and we decided to sample one dataset from each corpus with the same number of entries as the libero password set: we sampled 700,000 words from both the Repubblica corpus and the ItWac corpus, and those two files served as the basis for our Training. This was done to ease the process of organizing data for training PassGAN, and also because we were interested the impact that different ratios of password data to natural language data might have on the resulting model.
+Both corpora were created and used in earlier work \cite{baroni2004introducing,baroni2009wacky}, and made available through the NoSketch Engine online tool \cite{nosketch_engine}.\\
+We decided to sample one dataset from each corpus with the same number of entries as the libero password set: we sampled 700,000 words from both the Repubblica corpus and the ItWac corpus, and those two files served as the basis for our Training. This was done to ease the process of organizing data for training PassGAN, and also because we were interested the impact that different ratios of password data to natural language data might have on the resulting model.
 Previous research \cite{Melicher2016} has suggested that introducing Natural Language data into a system trained on passwords tends to generate a lot of noise during training, and our results turned out to be in line with that paper.
 
 Both corpora were simply a list of italian words, ranked by their frequency in the corpus: the file produced by the NoSkecth tool has a list of words in descending frequency and their frequency count.
