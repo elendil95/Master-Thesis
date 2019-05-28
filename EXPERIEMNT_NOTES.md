@@ -77,4 +77,6 @@ Try to crack the training set with big PassGAN and see if the results are signif
 
 * ItwaC 50%: 50,133 (62.04%) of passwords found.
 * ItwaC 100%: 47,646 (58.96%) of passwords found.
-*
+
+##Random notes
+PassGAN samples at a rough speed of 64000 samples written every 2 seconds
