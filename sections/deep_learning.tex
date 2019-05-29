@@ -1,5 +1,5 @@
 \subsection{Deep Learning}\label{subsec:deep-learning}
-Deep Learning is a class of machine learning systems whose goal is to extract relevant features from a distribution of data. On an abstract level, Deep Learning systems take inspiration the structure of human biology, with multi-layer structures of nodes (Neurons): each layer might be thought of as a section of a brain recognizing a very specific element, and when all layers work in unison they can recognize and act upon high level features and categories.
+Deep Learning is a class of machine learning systems whose goal is to extract relevant features from a distribution of data. On an abstract level, Deep Learning systems take inspiration the structure of the human brain, with multi-layer structures of nodes (Neurons): each layer might be thought of as a section of a brain recognizing a very specific element, and when all layers work in unison they can recognize and act upon high level features and categories.
 
 %Deep learning is used in many fields, and has achieved notable results in fields such as Computer Vision, Image Recognition and Natural Language Processing.%REFERENCE
 
@@ -30,12 +30,19 @@ Training of a neural network is composed of two distinct phases: the \emph{Feed 
 the weights of the connections between each neuron in the different layers, in an effort to reduce the error
 Once both phases are completed the network has completed an iteration. The next batch of data is then introduced and the process begins anew.
 
-In this coming section we will cover two types of Deep Learning Neural Networks that are relevant in this paper: \emph{Recurrent Neural Networks} (RNNs) and  \emph{Generative Adversarial Networks} (GANs).
+Note that training data is not fed to the network one piece at a time, but instead in inputted in batches. The input data is divided into batches of varying size (64 or 128 samples per batch are common values), and each iteration a new batch of data is loaded into the network; training usually ends once the system runs out of input data.
+
+In the coming sections we will cover two types of Deep Learning Neural Networks that are relevant in this paper: \emph{Recurrent Neural Networks} (RNNs) and  \emph{Generative Adversarial Networks} (GANs).
+This following section will cover Recurrent Neural Networks, while section \ref{subsubsec:gans} will cover Generative Adversarial networks: we will explain the structure and operation of GANs, then talk more about PassGAN specifically in section \ref{subsubsec:gans-passgan}
 %\clearpage
 
 \subsubsection{Recurrent Neural Networks}
 Recurrent Neural Networks are the simpler of the two network architectures; they are a kind of neural network specialized in working with data that has a temporal component.
 For instance if the network needs to predict the next letter or word in a sentence, it needs to know what came before. Another example might be a neural network that scales or edits videos, where the action to take on any given frame might be dependent on the frames that came before.
+
+We do not use Recurrent Neural Networks directly in our thesis, but they are used heavily in Melicher et al. \cite{Melicher2016} and we cover them here as an alternative approach to Deep Learning-based password crackers; furthermore they are also relevant in the context of PassGAN, as Hitaj. et al. \cite{PassGAN} compare the performance of PassGAN to the RNN-based system in Melicher et al.
+
+We have chosen to cover RNNs before GANs simply because they are a simpler network architecture with a more intuitive operation, so they are easier to explain overall.
 
 The precise method the network uses to keep track of temporal elements is rather complex, but can be briefly summarized by saying that each neuron in the network holds a state, and that each iteration a neuron's state from the previous iteration is fed as input to itself in the current iteration along side the current data to be processed.
 This creates a feedback loop, whereby at any given point the calculation performed by each neuron are influenced by previous events.
@@ -94,13 +101,7 @@ In the next iteration (shown in the second picture) the process repeats, but thi
 Through this mechanism, the network can better retain knowledge of features from past samples of data, and yield better results.
 However this also highlights a potential problem: because each node is only fed its previous state with each successive iteration, as the training process continues the network will develop a bias towards more recent samples of data.
  The cyclical nature of the feed-forward means that at any given iteration the network will retain memory of the initial stages of training, but the influence of those early iterations will wane with time as the network adapts and changes when presented with new data. This phenomenon is usually called 'Gradient Decay'\\
-% LSTM might be waaay too much detail. Also fuck its a *masive over-simplificatin*
 For some particular tasks such as Natural language generation, gradient decay can significantly influence the final results.
-
-% setup is not enough, since as time goes on the network will develop a bias towards features present in more recent iteration; the influence of data from the older iteration will degrade over time, and the system will slowly tend to 'forget' features and patterns it learned at the beginnning: when it is then presented with new data it has never seen before, thi bias can pose a problem.
-
-%To dampen the effects of this bias one might employ Long-Short Term Memory cells (LSTM), a special kind on RNN neuron which can dynamically rank new information (and by extention, the content of its state) based on its relevance. LSTM ensures that important data is retained regardless on when it was learned, and thus diminishes the effect of the base RNN bias.\newline
-%It should be noted however that LSTM does not constitute a straight upgrade from the plain RNN architecture: it may be beneficial in certain cases, but decremental in others.
 
 \subsubsection{Generative Adversarial Networks}\label{subsubsec:gans}
 Generative Adversarial Networks are a more complex architecture, composed of two discrete neural networks that are in competition with each other.
@@ -109,17 +110,12 @@ The system works by employing a generative network $(G)$ and a discriminator net
 
 \begin{figure}[H]
 \centering
-    \includegraphics[scale=0.60]{figures/GAN_v2.png}
+    \includegraphics[scale=0.55]{figures/GAN_v4.png}
     \caption{An illustration of the general structure on a Generative Adversarial Network}
     \label{fig:gan-diagram}
 \end{figure}    
-%Diagram is missing legend
 
 As we can see in figure \ref{fig:gan-diagram}, $G$ generates samples from a random noise distribution $p_z$. We call the resulting data distribution $p_g$; $D$ is fed both data from the training set ($x$) and the output from $G$ ($p_g$), and it's task is to figure out whether any given sample comes from the data (it belongs to $p_x$) or has been generated from $G$ (it belongs to $p_g$). In layman terms, we might say that it is $D$'s job to tell 'real' samples from 'fake' ones.
-
-%The feedback from $D$ is factors into the Error function and helps $G$ improve, and the goal is to train untill $D$ is no longer able to tell the two inputs apart.
-
-%As Goodfellow et al. \cite{Goodfellow2014} explain in their paper, $D$ is trained to maximize the likelihood of assigning the correct label to both data samples and samples from $G$; The generative network in turn is encouraged to generate data that is as similar as possible to the underlying distribution: this creates a race of sorts between the two networks, and a beneficial feedback loop between the two.
 
 Goodfellow et al.\cite{Goodfellow2014} explain the interplay between the two networks as a min-max game: the goal of $D$ is to maximize the likelihood of guessing correctly, while the goal of $G$ is to minimize that same likelihood (or to put it another way, $G$ wants $D$ to make more mistakes): the reason for this is that by minimizing the likelihood of $D$ guessing correctly, we are implicitly telling $G$ to generate samples as close as possible to the input data.
 
@@ -144,7 +140,6 @@ The idea, as the authors in \cite{Goodfellow2014} point out, is to have a certai
 The original paper indicates this ratio with $k$, and notes that increasing it grows the required computation significantly. In their experiments the authors used a $k$ value of one for performance reasons, while PassGAN defaults to a $k$ value of 10\cite{PassGAN}.
 
 \subsubsection{PassGAN}\label{subsubsec:gans-passgan}
-% should i mention IWGANs at the beginning? maybe this is a question for Niels.
 PassGAN is a generative adversarial network built to generate password candidates for the purposes of password cracking: In it, $G$ and $D$ compete in an attempt to generate passwords that closely mimic the real passwords fed to the network as input data.
 
 In this section, we will go over some of the important hyper-parameters used with PassGAN and some other concepts, that will become relevant is section \ref{sec:testing_and_evaluation} where we put PassGAN to the test.
@@ -182,5 +177,5 @@ Another important hyper-parameter is the number of total iterations, which defin
 
 In hindsight we should have tried to tweak the iteration count to optimize for our particular amount of data: we don't really know if this had a negative impact on the resulting model, the extra iterations might have lead to over fitting but we would not be able to tell as we did not have another model trained with a lower number of iterations as a term of comparison.\\
 This might be seen as one of the downside of using a generative system like a GAN, testing requires a more elaborate setup and its harder to spot problems when compared to simpler systems with built-in testing methods. 
-
+%double checck source code to see if over-fitting is actually possible nd how iterations actually work.
 The third relevant hyper-parameter is $k$, one that we have already discussed at the end of the previous section. As a reminder, $k$ is a value that determines how many iterations of $D$ happen for every iteration of $G$. In effect, it controls how quick the feedback loop between the two systems is and how fast PassGAN learns and adapts. We have not modified $k$ in our testing, but we mention it again here because we think it is key in understanding how PassGAN works. 
