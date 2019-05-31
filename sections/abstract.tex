@@ -2,7 +2,11 @@
 \begin{abstract}
 The goal of this thesis is to explore what impact language has on password cracking (if any) when using Generative Adversarial Networks (GANs) to crack passwords.
 In it we build on existing research by taking an existing GAN-based password cracker, and testing it with a dataset of leaked user passwords from Italy. 
-By comparing the performance of the resulting model with widely-used wordlists based primarily on English-language sources, as well as state-of-the-art rule-based tools, we hope to get insights into the impact that different grammatical structures have on both the performance of the GAN model, and by extension on its performance as a password cracking tool.
+By comparing the performance of the resulting model with widely-used wordlists based primarily on English-language sources, as well as state-of-the-art rule-based tools, we hope to get insights into the impact that different grammatical structures have on both the performance of the GAN model, and by extension on its performance as a password cracking tool.\\
+\newline
+In our testing we were able to crack almost 80\% of the Italian passwords in our database using GANs, while other state-of-the art tools only managed 71\%. Furthermore, we recovered a number of unique language-specific passwords that traditional tools would not have been able to find. 
 
-To that end we also wish to explore whether including Italian language corpora during training is decremental to the network's performance (as some prior research seems to indicate), or if it can prove beneficial in this particular context. 
+We also explored the impact of training GANs with natural language data in addition to password data, but found performance was about the same as without the extra natural language data.
+
+We conclude that language differences do have an impact on GAN-based tools, and that these tools are expressive enough to adapt to such differences. Overall GANs can be an effective tool for attacking non-english passwords, both in addition to state-of-the art tools or by themselves.
 \end{abstract}
