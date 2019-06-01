@@ -6,36 +6,35 @@ Both training of the GAN and testing were carried out on a Linux machine running
 With this card, training of PassGAN took roughly twelve hours.
 PassGAN was run on Python 2.7, running Tensorflow 1.12.0.%\\
 
-For testing we used the latest stable version of HashCat available at the time (version 5.1.0). %and we observed a peak speed between 850 and 860MH/s (for reference, 1MH/s is equivalent to 1 million candidate passwords hashed and compared per second) %Reference  %The definition of MH is probably wrong
+For testing we used the latest stable version of HashCat available at the time (version 5.1.0). %and we observed a peak speed between 850 and 860MH/s (for reference, 1MH/s is equivalent to 1 million candidate passwords hashed and compared per second)
 
 Figure \ref{fig:testing_flowchart} below illustrates our overall process, which is divided in two Phases: 
 \begin{itemize}
     \item A Training Phase, in which we train PassGAN on a given dataset and sample password candidates from the trained model.
-    \item A Testing Phase, in which we use HashCat to try and crack a sub-set of the passwords in the libero leak.
+    \item A Testing Phase, in which we use HashCat to try and crack a sub-set of the passwords in the Libero dataset.
 \end{itemize}
 
 \begin{figure}[H]
 \centering
     \includegraphics[scale=0.7]{figures/testing_flowchart_ocd.png}
-    \caption{A diagram illustrating our general workflow for evaluating PassGAN, including Training and Testing}
+    \caption{A diagram illustrating our general workflow for evaluating PassGAN, including Training and Testing.}
     \label{fig:testing_flowchart}
 \end{figure}    
 
 \subsection{Training the PassGAN system}\label{subsec:passgan-training}
-As we explained back in section \ref{subsubsec:gans-passgan}, in order to train PassGAN we took the plain text passwords from the libero leak (667,714 passwords) and split them into two groups. 80\% of the passwords went into our Training Set, while the remaining 20\% of passwords went in the Testing set: the Training set is used to train PassGAN as can be seen in Step 1 of Figure \ref{fig:testing_flowchart}, while the passwords in the Testing set are hashed with MD5 to serve as a cracking target for HashCat as seen in Step 2 of figure \ref{fig:testing_flowchart}. We will go into further detail with the Testing set in section \ref{subsec:passgan-testing}, as the brief explanation provided here is not entirely accurate.
+As we explained back in section \ref{subsubsec:gans-passgan}, in order to train PassGAN we took the plain text passwords from the libero leak (667,714 passwords) and split them into two groups. 80\% of the passwords went into our Training Set, while the remaining 20\% went in the Testing set: the Training set is used to train PassGAN as can be seen in Step 1 of Figure \ref{fig:testing_flowchart}, while the passwords in the Testing set are hashed with MD5 and serve as a cracking target for HashCat as seen in Step 2 of figure \ref{fig:testing_flowchart}. We will go into further detail with the Testing set in section \ref{subsec:passgan-testing}, as the brief explanation provided here is not entirely accurate.
 
-PassGAN can additionally be trained on Natural Language data, shown in a dotted box in figure \ref{fig:testing_flowchart}; elements shown within a dotted box are considered optional, they can be included or not. Natural Language data will be further discussed in section \ref{subsec:nl-testing}.
+PassGAN can additionally be trained on Natural Language data, shown as a dotted box in figure \ref{fig:testing_flowchart}; elements shown within a dotted box are considered optional, they can be included or not. Natural Language data will be further discussed in section \ref{subsec:nl-testing}.
 
 Once PassGAN is done training with a given dataset, it produces a trained model that can be used to generate candidate passwords via sampling (Step 1.1 in figure \ref{fig:testing_flowchart}).\\ 
-We covered the concept of models back in section \ref{subsubsec:gans-passgan}, but as a reminder a model is a snap-shot of the internal state of a network, containing all the weights and parameters necessary to process new input (or generate password candidates with the features learned from the training data, in the case of PassGAN).
+We covered the concept of models back in section \ref{subsubsec:gans-passgan}, but as a reminder a model is a snap-shot of the internal state of a network, containing all the weights and parameters necessary to process new input (generate password candidates in the case of PassGAN).
 
-We can use the trained model produced at the end of training to sample password candidates generated from PassGAN: The result of the sampling process will be a list of candidate passwords that make up the PassGAN wordlist used with HashCat when testing. We can choose to generate more or less candidate passwords when sampling: the tests listed in table \ref{tab:test-set} use a wordlist of 1 million password candidates, while tables \ref{tab:passgan-big} and \ref{tab:nl-results} use a wordlist of roughly 14 million password candidates.
+We can use the trained model produced at the end of training to sample password candidates generating from PassGAN: The result of the sampling process will be a list of candidate passwords that make up the PassGAN wordlist used with HashCat when testing. We can choose to generate more or less candidate passwords when sampling: for instance the tests listed in table \ref{tab:test-set} use a wordlist of 1 million password candidates, while tables \ref{tab:passgan-big} and \ref{tab:nl-results} use a wordlist of roughly 14 million password candidates.
+%Libero passwords
+%80% == 534,171 entries
+%20% == 133,542 entries
 
-
-%In order to train the PassGAN system, we extracted the plain text passwords from the original file (which was formatted in JSON as it contained personal information beyond just the emails and passwords of the users), and split it up in two sets: a training set containing 80\% of the passwords (534,171 entries) and a testing set containing 20\% of the passwords (133,542 entries).
-%We used the model trained on the bigger set to generate 1 million samples from PassGAN, that then served as the basis from our initial testing.
-
-Below is a small sample of password candidates generated by PassGAN, taken from the 1 million wordlist: %Maybe i should take a sample from the last checkpoint instead?
+Below is a small excerpt of password candidates generated by PassGAN, taken from the 1 million wordlist used in table \ref{tab:test-set}: 
 \begin{verbatim}
 22052906    mariamuna   iaup63     poldetta53
 001178      04051987    topolapa    aenara
@@ -44,8 +43,7 @@ dimonepa72  12orlomon   deb57828    belnabola
 marcanalla  ACADCNAN   leegenniki  vicaletto
 \end{verbatim}
 
-%Give a small example of one or two particular words and words in italian that resemble them.
-What we found particularly interesting was that while the samples showed the typical patterns exhibited by user-generated passwords (numbers appended or pre-pended to words, so-called leet speak etc..), a majority of them also seemed to mimic Italian words and phrases: most of these words were meaningless, but nonetheless we speculated that the GAN might be trying to \enquote{learn} Italian as a side-effect of generating samples close to the input data distribution.
+What we found particularly interesting was that while the samples showed the typical patterns exhibited by user-generated passwords (numbers appended or pre-pended to words, so-called leet speak etc..), a majority of them also seemed to mimic the sound of Italian words and phrases: most of these words were meaningless, but nonetheless we speculated that the GAN might be trying to \enquote{learn} Italian as a side-effect of generating samples close to the training data distribution.
 As an example the string \texttt{vicaletto} resemble the italian word \enquote{vicoletto} meaning \enquote{a narrow street}, while the string \texttt{princone} sounds vaguely like the italian word for pickaxe, \enquote{piccone}. 
 
 \subsection{Testing the PassGAN system}\label{subsec:passgan-testing}
@@ -60,28 +58,25 @@ As an example the string \texttt{vicaletto} resemble the italian word \enquote{v
 The testing process is depicted in figure \ref{fig:testing_only}: In it we use HashCat to crack a sub-set of the Libero leak passwords (the cracking target), using a wordlist and optionally a set of mangling rules as input.
 
 %This section is still convoluted
-The cracking target is a sub-set of the Libero Testing set, that itself is a set of 20\% of the libero leak passwords that we set aside from testing as mentioned in the very beginning of section \ref{subsec:passgan-training}.
-% make it more clear that we are copying the passgan paper.
-Our cracking target is not the whole Testing set, but a sub-set of it composed of passwords with a length of 10 characters or less: this was done because Hitaj. et al. \cite{PassGAN} also limit their testing with HashCat in this same way, we decided to do it too in order to more closely follow their methodology; as to the reason why this limitation is in place, we speculate this is done to better suit the passwords in the cracking target to PassGAN. As we mentioned back in section \ref{subsubsec:gans-passgan}, PassGAN sets the \emph{Sequence Length} hyper-parameter to 10 during training: this parameter sets the maximum length of password candidates generated by PassGAN during sampling, so testing against a sub-set of 10-character passwords is a way to tailor the cracking target to PassGAn's output slightly.
-We do not fully understand why Hitaj. et al. made this choice, but nonetheless we adopted it ourselves in an effort to more closely mimic their evaluation process.
+The cracking target is a sub-set of the Libero Testing set, - the set of 20\% of the libero leak passwords that we set aside from testing as mentioned in section \ref{subsubsec:gans-passgan} and at the beginning of the previous section.
 
+Our cracking target is not the whole Testing set, but a sub-set of it composed of passwords with a length of 10 characters or less: this was done because Hitaj. et al. \cite{PassGAN} also limit their testing with HashCat in this same way.\\
+We decided to do it too in order to more closely follow their methodology. We speculate this limitation exists to optimize the passwords in the cracking target to PassGAN. As we mentioned back in section \ref{subsubsec:gans-passgan}, PassGAN sets the \emph{Sequence Length} hyper-parameter to 10 during training: this parameter sets the maximum length of password candidates generated by PassGAN during sampling, so testing against a sub-set of 10-character passwords is a way to tailor the cracking target to PassGAn's output slightly.
+
+We do not fully understand why Hitaj. et al. made this choice, but nonetheless we adopted it ourselves in an effort to more closely mimic their evaluation process.
+\clearpage
 We believe this sub-set of ten character passwords still represents the whole Testing set fairly, as not many passwords were removed: the vast majority of passwords in the Testing set are 10 characters or less, 111,994 or 83.86\% to be precise. 
 From here on, we will refer to this sub-set of 10 character passwords as \emph{test\_10c} (the actual filename) or more simply as \enquote{the cracking target}
 
-% During our testing we tried to follow the same sort of methodology that Hitaj et al.\cite{PassGAN} used in their paper: as such our cracking target is not the whole Testing set, a sub-set of it composed of passwords with a length of 10 characters or less: This was done to better use PassGAN, as during training we set the maximum sequence length to 10.
-% We believe this sub-set of ten character passwords still represents the whole Testing set fairly, as not many passwords were removed: the vast majority of passwords in the Testing set are 10 characters or less, 111,994 or 83.86\% to be precise. 
-% From here on, we will refer to this sub-set of 10 character passwords as \emph{test\_10c} (the actual filename) or more simply as \enquote{the cracking target}
+Touching upon the wordlist and rules used, they are also depicted in figure \ref{fig:testing_flowchart}: for the former we use either the \emph{RockYou} wordlist or a wordlist generated by PassGAN, while for the latter we use either the \emph{best64} or \emph{generated2} rule sets. Both the RockYou wordlist and the two rule sets mentioned above were chosen because they were used in Hitaj et al. \cite{PassGAN}, but also because they are widely used and understood to be among the more efficient wordlists available to an attacker. We believe that they demonstrate rather well what rule-based password crackers can do without further language-specific optimizations such as those that PassGAN provides. %Reference, nigga
 
-Touching upon the wordlist and rules used, they are also depicted in figure \ref{fig:testing_flowchart}: for the former we use either the \emph{RockYou} wordlist or a wordlist generated by PassGAN, while for the latter we use either the \emph{best64} or \emph{generated2} rule sets. Both the RockYou wordlist and the two rulesets mentioned above were chosen because they were used in Hitaj et al. \cite{PassGAN}, but also because they are widely used and understood to be among the more efficient wordlists available to an attacker. We believe that they demonstrate rather well what rule-based password crackers can do without further language specific optimizations such as those that PassGAN provides. %Reference, nigga
+The RockYou wordlist contains more than 14 million passwords, all of which come from various data breaches that have been compiled into one resource; it contains passwords of varying length and complexity, and as such should provide a good performance baseline for rule-based crackers. The best64 ruleset contains around 70 mangling rules, while the genrated2 ruleset contains more than 65,000. 
 
-The RockYou wordlist contains more than 14 million passwords, all of which come from various data breaches that have been compiled into one resource; it contains password of varying length and complexity, and as such should provide a good performance baseline for rule-based crackers. The best64 rules file contains around 70 mangling rules, while the genrated2 rules file contains more than 65,000. 
+As a final note, HashCat's default behaviour is to cache passwords found during an attack in what the HashCat manual calls a \emph{potfile}, so that if an attacker chooses to approach the target using a different wordlist or a different set of rules, no time is wasted cracking passwords that were already found previously; because using different rule sets can greatly affect the efficiency of cracking, this form of caching allows an attacker to crack more passwords by combining different approaches.
+In order to test the performance of each wordlist and rule combination separately, we disabled caching of cracked passwords between cracking attempts: this was done with the \texttt{--potfile-disable} option in HashCat, and it allowed us to evaluate the performance of each different combination of wordlists and rules singularly. However disabling the potfile also leads to a lower overall number of passwords found. Tables \ref{tab:test-set}, and \ref{tab:passgan-big} show tests done with caching disabled, while the figures obtainable with caching will be mentioned in section \ref{subsubsec:potfile-enable}. 
 
-The tables below will illustrate the results of our tests attacking the cracking target with different combination of Wordlists and rules. To clarify, we decided early on to use mangling rules also when testing password samples from PassGAN, since they greatly increased the number of passwords found compared to just using a wordlist. 
-To the best of our understanding Hitaj. et al. have not used rules in their evaluation of PassGAN, but instead have chosen to generate a huge number of password candidates and use PassGAN alone to match passwords in the cracking target. We have also briefly tried this approach, our experience with it will be detailed in section \ref{subsubsec:huge-wordlists}}%If you wanna put the results for huge passgan wordlist here is where they go
-%This is not something that Hitaji and al. seem to have done, they seem to have used only PassGAN-generated wordlist to crack their target db. We tried and we got really shit results
-
-As a final note, HashCat's default behaviour is to cache passwords found during an attack in what the HashCat manual calls a \emph{potfile}, so that if an attacker chooses to approach the target using a different wordlist or a different set of rules, no time is wasted cracking passwords that were already found previously; because using different rule sets can greatly affect the efficiency of cracking, this form of caching allow an attacker to crack more passwords by combining different approaches.
-In order to test the performance of each wordlist and rule combination separately, we disabled caching of cracked passwords between cracking attempts: this was done with the HashCat command showed in the code snippet in section \ref{sec:libero}, and it allowed us to evaluate the performance of different combination of wordlists and rules singularly. However disabling the potfile also leads to a lower overall number of passwords found. Tables \ref{tab:test-set}, and \ref{tab:passgan-big} show show tests done with caching disabled, while the figures obtainable with caching will be mentioned in section \ref{subsubsec:potfile-enable}. 
+The tables below will illustrate the results of our tests attacking the cracking target with different combination of wordlists and rules. To clarify, we decided early on to use mangling rules also when testing password samples from PassGAN, since they greatly increase the number of passwords found compared to just using a wordlist. 
+We mention this because Hitaj. et al. seem to not have used rules in their evaluation of PassGAN, but instead have chosen to generate a huge number of password candidates and use PassGAN alone to match passwords in the cracking target. We have also briefly tried this approach, our experience with it will be detailed in section \ref{subsubsec:huge-wordlists}.
 
 \begin{table}[H]
 \begin{tabular}{|l|c|c|c|}
@@ -96,7 +91,7 @@ In order to test the performance of each wordlist and rule combination separatel
 \hfill
 \end{table}
 
-Table \ref{tab:test-set} shows that PassGAN performs rather poorly in comparison with the RockYou wordlist: we attributed this shortcoming to two main factors: firstly the size of the wordlist generated by PassGAN, which is 1 million entries as opposed to the 14+ million entries of RockYou, and secondly the quality of the PassGAN wordlist. Both of these factors play into each other, because while the rules provide great advantages in terms of password found, ultimately they just modify the entries in the wordlist. Thus we might say that the whole system is limited by the capabilities of the wordlist that is used.
+Table \ref{tab:test-set} shows that PassGAN performs rather poorly in comparison with the RockYou wordlist: we attributed this shortcoming to two main factors: firstly the size of the wordlist generated by PassGAN, which is 1 million entries as opposed to the 14+ million entries of RockYou, and secondly the quality of the PassGAN wordlist. Both of these factors play into each other, because while mangling rules provide great a advantages in terms of password found, ultimately they just modify the entries in the wordlist. Thus we might say that the whole system is limited by the capabilities of the wordlist that is used.
 
 In order to test this hypothesis we used our existing PassGAN model to generate a bigger wordlist with as many entries as as RockYou, and performed a second test:
 \begin{table}[H]
@@ -107,24 +102,24 @@ In order to test this hypothesis we used our existing PassGAN model to generate 
 \textbf{Rockyou}          & 19,215 (23.78\%) & 30,170 (37.33\%) & 59,134 (73.18\%) \\ \hline
 \textbf{PassGAN}          &  10,735 (13.28\%) & 20,638 (25.54\%) & 48,751 (60.33\%) \\ \hline
 \end{tabular}
-\caption{A comparison of the number of passwords in the cracking target found by RockYou and PassGAN, using a 14 million wordlist for PassGAN} 
+\caption{A comparison of the number of passwords found in the cracking target by RockYou and PassGAN, using a 14 million wordlist for PassGAN} 
 \label{tab:passgan-big}
 \end{table}
 
-As table \ref{tab:passgan-big} shows, PassGAN found roughly 15\% more passwords when using a bigger wordlist: this leads us to believe that wordlist size and quality does constitute a performance bottle-neck. It should be also noted that when compared with the original, 1 million string wordlist, we found a significant 40\% overlap in the strings that were generated. Addressing the problem of quality of the wordlist, we speculated that one of the reasons for the gap in efficiency between PassGAN and RockYou might be the fact that the strings generated by PassGAN don't follow grammatical rules, and this might have hindered the efficacy of the base wordlist. This hypothesis however was later proven wrong by our natural language experiments, detailed in section \ref{subsec:nl-testing}
-%Talk about the 50mil and 100mil exapriements
+As table \ref{tab:passgan-big} shows, PassGAN found roughly 15\% more passwords when using a bigger wordlist: this leads us to believe that wordlist size and quality does constitute a performance bottle-neck. It should be also noted that when compared with the original, 1 million wordlist, we found a significant 40\% overlap in the passwords that were generated. Addressing the problem of quality of the wordlist, we speculated that one of the reasons for the gap in efficiency between PassGAN and RockYou might be the fact that the strings generated by PassGAN don't follow grammatical rules, and this might have hindered the efficacy of the base wordlist. This hypothesis however was later proven wrong by our natural language experiments, detailed in section \ref{subsec:nl-testing}. In reality this gap in performance is probably due to the fact that PassGAN needs a far bigger wordlist to be able to match the performance of RockYou: in section \ref{subsubsec:huge-wordlists} we discuss this further, and estimate that it would take a wordlist of around 300 million password candidates to bridge the gap.
 
 \subsubsection{Running HashCat with caching}\label{subsubsec:potfile-enable}
 %change this: passgan demonstrates that pasgan can outperform hashcat so its not 100\% worse. 
 Now that we had an idea of the performance of each method, we wanted to see what was the maximum number of passwords we could find by combining the two approaches (RockYou and PassGAN):
-In order to do this we took the best performing ruleset (generated2), and we performed two rounds of cracking with caching enabled. First we run RockYou with the generated2 ruleset, that yielded the same results shown in Table \ref{tab:passgan-big} for that particular combination; next we tried PassGAN plus generated2, which yielded a final result of 63,847 passwords found (79.01\% of the cracking target). Running the two approaches in combination seems to definitely be more affective that using PassGAN alone, as there are many passwords that PassGAN cannot find but that are cracked by the RockYou wordlist.
+In order to do this we took the best performing ruleset (generated2), and we performed two rounds of cracking with caching enabled. First we run RockYou with the generated2 ruleset, that yielded the same results shown in Table \ref{tab:passgan-big} for that particular combination; next we tried PassGAN plus generated2, which yielded a final result of 63,847 passwords found (79.01\% of the cracking target). Running the two approaches in combination seemed to definitely be more affective that using PassGAN alone.
+
 Furthermore when we look at the two lists of cracked passwords, we can notice around 5,000 unique passwords that were matched by PassGAN but not Rockyou, showing that PassGAN might have some potential as a tool to close in on more difficult passwords that have a specific linguistic provenance. Looking at some of these unique passwords, they mostly consist of proper names and more obscure italian words.
 
 \subsubsection{Testing the limits of PassGAN wordlist size}\label{subsubsec:huge-wordlists}
 As we said previously Hitaj. et al. \cite{PassGAN} don't seem to have used rules when testing PassGAN: instead they seem to have taken a different approach, taking advantage of the fact that PassGAN can generate arbitrary numbers of password candidates from a trained model; these password candidates may not match the target as well as the passwords in an established wordlist like RockYou, but PassGAN can generate vast quantities of them: thus Hitaj. et al chose a \enquote{quantity over quality} approach.
 
 We were interested in seeing how such huge wordlists would perform without the help of rules, so we run a couple of tests: we took our existing PassGAN model, our standard cracking target \texttt{test\_10c}, and we generated three new wordlist for PassGAN: one with 50 million entries, one with 100 million entries And finally one with roughly 196 million entries. 
-The reason why we chose these three steps is simple: as we can see in tables \ref{tab:test-set} and \ref{tab:passgan-big}, going from 1 million entries to 14 million entries yielded more than double the number of passwords when not using rules, so we wanted to see if testing a wordlist with $14^2$ million passwords would yield roughly the same increase conmpared to the results shown in table \ref{tab:passgan-big}. The 50 million and 100 million wordlists are intermediate steps that can give us clues on how the number of passwords cracked scales with wordlist size.
+The reason why we chose these three steps is simple: as we can see in tables \ref{tab:test-set} and \ref{tab:passgan-big}, going from 1 million entries to 14 million entries yielded more than double the number of passwords when not using rules, so we wanted to see if testing a wordlist with $14^2$ million passwords would yield roughly the same increase compared to the results shown in table \ref{tab:passgan-big}. The 50 million and 100 million wordlists are intermediate steps that can give us clues on how the number of passwords cracked scales with wordlist size.
 
 \begin{table}[H]
 \centering    
@@ -145,25 +140,23 @@ Whats more, 21.68\% is relatively close to the number of passwords found by Rock
 While we consider these results fascinating, they can be mis-leading in the context of the PassGAN paper: in order to outperform RockYou with the genenerated2 rules, Hitaj. et al had to generate around $10^{9}$ password candidates, which if far more than what we have shown here.
 
 We understand why they chose this approach, they saw mangling rules as a hand-coded representation of password features and PassGAN as a tool that autonomously learns those features.
-PassGAN is seen as a potential replacement for rule-based crackers in \cite{PassGAN}, so it makes sense that Hitaj. et all did not use mangling rules with PassGAN:
+PassGAN is seen as a potential replacement for rule-based crackers in \cite{PassGAN}, so it makes sense that Hitaj. et all did not use mangling rules with PassGAN.
 
-We would argue however than when approaching a set of passwords in another language, this mentality starts to become less relevant: in such a context we feel that the two tools complement each other, they have different roles that do not overlap as much; we see the use of rules with PassGAN as a useful tool that lessen the negative aspects of PassGAN (namely the amount of time and processing power required to train and sample such huge amounts of password candidates), while still reaping the benefits of machine learning systems such as the adaptability to the language of the dataset.
+We would argue however than when approaching a set of passwords in another language, this mentality starts to become less relevant: in such a context we feel that the two tools complement each other, they have different roles that do not overlap as much; we see the use of rules with PassGAN as a useful tool that lessens the negative aspects of PassGAN (namely the amount of time and processing power required to train and sample such huge amounts of password candidates), while still reaping the benefits of machine learning systems such as the adaptability to the language of the dataset.
 
 In conclusion, we think the best approach might be similar to what we have done in this section: generate enough samples to match the performance of a commonly used wordlist such as RockYou, and then use PassGAN with rules to match a sizable majority of the passwords while retaining language-specific features.
 
-The point made by Hitaj. et al. is still valid, in principle mangling rules are limiting, and PassGAN can potentially express unique patterns that do not exist in mangling rules, however we are not sure whether this theoretical benefit is worth the additional costs in terms of processing power and storage space in practice: The authors of the original paper argue that storage space and processing powers are cheap and of no practical concern, we'd be more inclined to favour a faster and more practical approach using mangling rules.% but it all depends on whether the actors in a threat model have the financial means to deploy machine learning systems, and especially the motivation to crack 100\% of a target that would justify the extensive use of PassGAN long term.
+The point made by Hitaj. et al. is still valid, in principle mangling rules are limiting, and PassGAN can potentially express unique patterns that do not exist in mangling rules, however we are not sure whether this theoretical benefit is worth the additional costs in terms of processing power and storage space in practice. The authors of the original paper argue that storage space and processing powers are cheap and of no practical concern, we'd be more inclined to favour a faster and more practical approach using mangling rules.
 
 \subsection{Training PassGAN with Natural Language corpora} \label{subsec:nl-testing}
 %Find a more reader-friendly explanation for grammatical correctness, especially at the beginning  when defining the goal.
-Our next step was to include natural language data in the input and re-train the model, in the hope that this new input data would help the system generate more grammatically correct strings and thus improve the number of passwords matched.
+Our next step was to include natural language data in the input data and re-train PassGAN, in the hope that this new input data would help the system generate more grammatically correct strings and thus improve the number of passwords matched.
 
 Firstly though we should define what our goal was for using Natural Language with PassGAN, and what we mean with grammatical correctness. 
-As we showed at the end of section \ref{subsec:passgan-training}, a sizeable number of the password candidates generated by PassGAN during sampling are words: in the context of the strings generated by PassGAN, we define a \enquote{word} as simply a string composed of uppercase and/or lowercase letters. It might be entirely composed of letters like the two examples we gave in section \ref{subsec:passgan-training}, or have numbers pre-pended or appended to it. As we mentioned in those examples, most of the words generated by PassGAN when trained on passwords exclusively are meaningless: they may resemble italian words, but they are ultimately incorrect.
-%whats wrong with saying grammatical correctness is that peple may think about sentences adn passphrases
-Our goal for training PassGAN with natural language data was to hopefully teach the system enough about the italian language to turn a decent part of those meaningless words into actual italian words. In Turn, we thought, that might have yielded better results in terms of number of password cracked and especially in terms of their quality: We hoped the inclusion of Natural Language data would allow us to match more language-specific passwords like those 5,000 unique passwords mentioned in \ref{subsubsec:potfile-enable}   
 
-% the two corpoora were put toghether by other people, i simpl sampled them.
-% say that and cite sources
+As we showed at the end of section \ref{subsec:passgan-training}, a sizeable number of the password candidates generated by PassGAN during sampling are words: in the context of the strings generated by PassGAN, we define a \enquote{word} as simply a string composed of uppercase and/or lowercase letters. It might be entirely composed of letters like the two examples we gave in section \ref{subsec:passgan-training}, or have numbers pre-pended or appended to it. As we mentioned in those examples, most of the words generated by PassGAN when trained on passwords exclusively are meaningless: they may resemble italian words, but they are ultimately incorrect.
+Our goal for training PassGAN with natural language data was to hopefully teach the system enough about the italian language to turn a decent part of those meaningless words into actual italian words. In Turn, we thought, that might have yielded better results in terms of number of password cracked and especially in terms of their quality. We hoped the inclusion of natural language data would allow us to match more language-specific passwords like those 5,000 unique passwords talked about in \ref{subsubsec:potfile-enable}   
+
 %Maybe put an excract from the 2 corpora in here too.
 For this purpose we have chosen two different corpora of Italian Natural Language samples: 
 \begin{itemize}
@@ -172,14 +165,19 @@ For this purpose we have chosen two different corpora of Italian Natural Languag
 \end{itemize}
 
 Both corpora were created and used in earlier work \cite{baroni2004introducing,baroni2009wacky}, and made available through the NoSketch Engine online tool \cite{nosketch_engine}.\\
-We decided to sample one dataset from each corpus with the same number of entries as the libero password set: we sampled 700,000 words from both the Repubblica corpus and the ItWac corpus, and those two files served as the basis for our Training. This was done to ease the process of organizing data for training PassGAN, and also because we were interested the impact that different ratios of password data to natural language data might have on the resulting model.
+We decided to sample one dataset from each corpus with the same number of entries as the libero password set: we sampled 700,000 words from both the Repubblica corpus and the ItWac corpus, and those two files served as the basis for our Training. 
+
+This was done to ease the process of organizing data for training PassGAN, and also because we were interested in the impact that different ratios of password data to natural language data might have on the resulting model.
 Previous research \cite{Melicher2016} has suggested that introducing Natural Language data into a system trained on passwords tends to generate a lot of noise during training, and our results turned out to be in line with that paper.
 
-Both corpora were simply a list of italian words, ranked by their frequency in the corpus: the file produced by the NoSkecth tool has a list of words in descending frequency and their frequency count.
-In order to prepare the data for training, went through a similar process to what we did for the libero leak passwords: we divided each corpus into an 80\%-20\% (we realized later this step was entirely unnecessary, as we had no intention of using NL data as a cracking target) and then proceeded to make two wordlist out of each natural language corpus.
+Both corpora were simply a list of italian words, ranked by their frequency in the corpus: the two  files produced by the NoSkecth tool were a list of words in descending frequency, accompanied by their frequency count.
 
-The shell commands we used to accomplish this are shown below:
+In order to prepare the natural language  data for training, we went through a similar process to what we did for the libero leak passwords: we divided each corpus into 80\%-20\%, removed the frequency counts and shuffled the words in each corpus. We then used the two 80\% sets to make our final training data.
 
+We realized later that dividing the corpora into 80\%-20\% was not necessary, as we did not use the remaining 20\% for testing: in hindsight, we could have avoided this step.
+
+The shell commands we used to accomplish this are shown below.
+\clearpage
 \begin{lstlisting}[language=bash,numbers=left,stepnumber=1,breaklines=true,postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
 #Split each NL corpus into 80%-20% (not strictly necessary)
 head -n 534172 Repubblica_700k.txt|cut -f1 > Repubblica-80.txt
@@ -203,9 +201,11 @@ shuf ItWac_80.txt|cat - ../libero\ it\ July\ 2016/train.txt|shuf > libero+ItWac.
 
 As we can see in the code snippet above, we created two training datasets for each corpus: one contained all the passwords in the Libero Training set and 50\% of the Natural language data, while the other contained all of the Training set passwords and all of the Natural Language data: we did this because we wanted to see what impact different amounts of natural language data had on PassGAN's performance (if any).
 
-We thus proceeded to train 4 separate instances of PassGAN with our four datasets, and then sampled each trained model for testing: the results were 4 separate wordlists, each of around 14 million entries, that we used in HasCat to attack the same cracking target that we used in the previous section (test\_10c).
+This left us with a total of four datasets ready for training,
 
-Touching upon the impact of NL data on the model performance, our hypothesis was that we might see a decrease in model performance when training with 100\% of the natural language data since each corpus contains as much data as the Libero Training set; By combining the two into a single dataset for training, we effectively use as much NL data as password data.  We though this might lead to noise and ‘confuse’ PassGAN, resulting in a model with less focus on generating passwords and more focused on generating NL samples. While that is technically true, overall table \ref{tab:nl-results} shows that the introduction of NL data does not seem to have any noteworthy impact on cracking performance.
+We then proceeded to train 4 separate instances of PassGAN with our four datasets, and then sampled each trained model for testing: the results were 4 separate wordlists, each of around 14 million entries, that we used in HasCat to attack the same cracking target that we used in the previous section (test\_10c).
+
+Touching upon the impact of NL data on the model performance, our hypothesis was that we might see a decrease in model performance when training with 100\% of the natural language data, since each corpus contains as much data as the Libero Training set holds passwords; By combining the two into a single dataset for training, we effectively use as much NL data as password data.  We though this might lead to noise and \enquote{confuse} PassGAN, resulting in a model with less focus on generating passwords and more focused on generating NL samples. While that turned out to be technically true, overall table \ref{tab:nl-results} shows that the introduction of NL data does not seem to have any noteworthy impact on cracking performance.
 
 The results of our tests on all four wordlists are shown in table \ref{tab:nl-results} below.
 
@@ -223,7 +223,7 @@ The results of our tests on all four wordlists are shown in table \ref{tab:nl-re
 \label{tab:nl-results}
 \end{table}
 
-As we can see the results of training with natural language data are very similar to just using PassGAN+gen2 as shown in table \ref{tab:passgan-big}; there is a slight improvement of 2-3\% when using the datasets containing 50\% of language data, but we do not believe it is a significant change. This result seems to be in line with Melicher et al.\cite{Melicher2016}, and it seems to show us that natural language data does not have much of an impact on the output of PassGAN. 
+As we can see, the results of training with natural language data are very similar to just using PassGAN+gen2 as shown in table \ref{tab:passgan-big}; there is a slight improvement of 2-3\% when using the datasets containing 50\% of language data, but we do not believe it is a significant change. This result seems to be in line with Melicher et al.\cite{Melicher2016}, and it seems to show us that natural language data does not have much of an impact on the output of PassGAN. 
 %\newpage
 If we take a random sample from the Repubblica 50\% set, the one that performed the best even if marginally so, we can see that there has not been a substantial improvement in the grammatical correctness of the words in the sample.:
 \begin{verbatim}
@@ -234,7 +234,7 @@ n!utelo     kedea       Colpudari   rich1770
 aletsa      simoshero   gidni12     1uva1[78
 \end{verbatim}    
 
-The words that PassGAN generates are still meaningless and do not seem to have a higher degree of grammatical correctness, the only change we have been able to observe is in the fact that more strings seem to be composed of letters exclusively.
+The words that PassGAN generates are still meaningless and do not seem to have a higher degree of grammatical correctness, the only change we have been able to observe is in the fact that more password candidates seem to be composed of letters exclusively.
 
-This does not discredit the use of Natural language as a whole, but points us toward the fact that natural language generation and password generation might two different workloads that may not be accomplished well with the same machine learning system: it seems that introducing Natural Language data into PassGAN simply adds noise to the system and does not contribute to the system's performance.
-The results in table \ref{tab:nl-results} and the effectiveness of mangling rules as a cracking tool also hint at the idea that user-generated passwords may be defined by their patterns more than by their language of origin.
+This does not discredit the use of Natural language as a whole, but points us towards the fact that natural language generation and password generation might be two different workloads that may not be accomplished well with the same machine learning system: it seems that introducing Natural Language data into PassGAN simply adds noise to the system and does not contribute significantly to the model's performance.
+The results in table \ref{tab:nl-results} and the effectiveness of mangling rules as a cracking tool also hint at the idea that user-generated passwords may be defined more by their patterns than by their language of origin.
