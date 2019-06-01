@@ -1,19 +1,18 @@
 \section{Conclusion}
-%Small problem: conclusions 2 and 4 are not mine, im pretty sure they are things that the PAssgAN paper said before me.
 In this thesis we have looked at the impact that language has on PassGAN in various ways:
 To conclude our thesis, we would like to answer the questions posed in our problem formulation all the way back in section \ref{sec:introduction}.
 
 \begin{itemize}
 \item \emph{How does PassGAN perform when cracking Italian passwords?} %Implies: is it better or worse when using the pre-trained model as opposed to a new model trained on italian passwords?
 
-Overall we can say that PassGAN performed worse in our experiments when compared to rule-based password crackers, but we did not play to PassGAN's strenghts: in most of our tests we did not take advantage of the huge potential number of password candidates that PassGAN can output, but we also showed in section \ref{subsubsec:huge-wordlists} that PassGAN can potentially match the performance of rule-based tools by just using bigger wordlists. 
+Overall we can say that PassGAN performed worse in our experiments when compared to rule-based password crackers, but we did not play to PassGAN's strengths: in most of our tests we did not take advantage of the huge potential number of password candidates that PassGAN can output, but we also showed in section \ref{subsubsec:huge-wordlists} that PassGAN can potentially match the performance of rule-based tools by just using bigger wordlists. This conclusion was first made in Hitaj. et al. but it holds true in our experience as well. 
 
-For comparison, using RockYou with the generated2 ruleset gives us a maximum number of possible password candidates of around $9,1\times10^{10}$: if we take our rough estimate of 300 million password candidates to match the performance of the base RockYou wordlist, we will find that PassGAN needs around three orders of magnitude more password candidates to match the performance of RockYou+generated2.   
+Comparing the number of password candidates needed to achieve the same performance in RockYou and PassGAN, using RockYou with the generated2 ruleset gives us a maximum number of possible password candidates of around $9,1\times10^{10}$: if we take our rough estimate of 300 million password candidates to match the performance of the base RockYou wordlist, we will find that PassGAN needs around three orders of magnitude more password candidates to match the performance of RockYou+generated2.   
 
 
 \item \emph{Does difference in language have an impact on the passwords found by PassGAN and state-of-the-art password crackers?}
 
-We would say yes: even when PassGAN perform worse than traditional password crackers in terms of total number of passwords found, we argue that it is capable of finding unique and novel passwords that RockYou would not be able to match. An example of this was presented in section \ref{subsubsec:potfile-enable}, where PassGAN found 5000 unique passwords that were not matched by RockYou.      
+We would say yes: even when PassGAN perform worse than traditional password crackers in terms of total number of passwords found, we argue that it is capable of finding unique and novel passwords that RockYou would not be able to match. An example of this was presented in section \ref{subsubsec:potfile-enable}, where PassGAN found 5000 unique passwords that were not matched by RockYou. There we used a 14 million wordlist for PassGAN, the potential for unique passwords can be much higher if we start using bigger wordlists.    
 
 \item \emph{How does the inclusion of natural language data during training affect PassGAN's performance?}
 
@@ -24,13 +23,14 @@ From our experience, the inclusion of natural language data does not seem to hav
 Yes. In our opinion PassGAN can be a useful tool to crack passwords from a different language: while rule-based password crackers may be considered better at first, the flexibility that PassGAN provides ultimately leads us to believe it is better.
 
 \end{itemize}
-Thanks to PassGAN an attacker has a variety of approaches at his disposal: they can either use PassGAN as a specialist tool to supplement rule-based tools, or use it as a replacement for rule-based tools as Hotaj. et al. suggest \cite{PassGAN}. 
+Thanks to PassGAN an attacker has a variety of approaches at his disposal: they can either use PassGAN as a specialist tool to supplement rule-based crackers, or use it as a replacement for rule-based tools as Hitaj. et al. suggest \cite{PassGAN}. 
 
 In the first case PassGAN would be used to tackle passwords that may not be part of wordlists (e.g passwords containing  proper names, slang, idioms or other elements specific to a language). 
-We would encourage the use of mangling rules with PassGAN in this case, since  PassGAN's role would be to generate language-specific passwords, while mangling rules are used to apply the patterns typical in user-generated passwords. This particular approach takes the best of both worlds, while still relying mainly on rule-based tools.
+We would encourage the use of mangling rules with PassGAN in this case, since  PassGAN's role would be to generate language-specific passwords, while mangling rules are used to apply the patterns typical in user-generated passwords to those candidates. This particular approach takes the best of both worlds, while still relying mainly on rule-based tools.
 
-On the other hand if the data is valuable enough, an attacker can invest the time and money required to use PassGAN to its full potential following the idea Hitaj. et al \cite{PassGAN} outlined in their paper. It may take a lot longer and require more storage space, but PassGAN would eventually crack more passwords than any rule-based tool.
+On the other hand if the data is valuable enough, an attacker can invest the time and money required to use PassGAN to its full potential following the idea Hitaj. et al \cite{PassGAN} outlined in their paper. It may take a lot longer and require more storage space, but PassGAN would eventually crack more passwords than any rule-based tool if the authors of the original paper are right.
 
 That said we don't think that PassGAN is necessarily the best application of deep learning to this field: Hitaj. et al. demonstrated that it can be effective, but we speculate that there might be better approaches. For example if PassGAN generated mangling rules directly instead of password candidates, one might get the similar results with far lower costs in terms of processing time or storage space required.
+On the other hand this approach might be more difficult, as the output of the network is more abstract than just strings: rules have to be written in a specific context-free or regular language, and this might present additional challenges.
 
 In conclusion, we believe Deep Learning systems are definitely capable of dealing with passwords from a non-english source: they provide a level of flexibly and adaptability that are not present in rule-based password crackers by default. Whats more, their ability to learn password and language features from available data provides a new and unique approach to password cracking that is not limited by rules or wordlists compiled by human actors.
