@@ -23,7 +23,7 @@ Figure \ref{fig:DNN} shows the typical structure of a Deep Neural Network:
 As we can see in the example above, a neural network is composed of an Input Layer, a number of Hidden layers and an Output layer.
 Speaking in general terms, the input layer receives a chunk of data to be processed, the hidden layers operate on the input sequentially, and the output layer is where the system expresses a judgement on the data.
 
-The training process for a neural network is composed of two distinct phases: the \emph{Feed Forward} phase and the \emph{Back-Propagation} phase: In the feed forward phase the network processes the current data and comes to a result, then the networks computes the Error (or how much the result it had come to deviated from the expected result).
+The training process for a neural network is composed of two distinct phases: the \emph{Feed Forward} phase and the \emph{Back-Propagation} phase: in the feed forward phase the network processes the current data and comes to a result, then the networks computes the Error (or how much the result it had come to deviated from the expected result).
 
 The network then takes the error value and propagates it backwards by adjusting the weights of the connections between each neuron in the different layers, in an effort to reduce the error. This is the back-propagation phase.
 Once both phases are completed, the network has completed an iteration. The next batch of data is then introduced and the process begins anew.
@@ -90,7 +90,7 @@ Iteration number 2 $t=2$
 \end{figure}
 %\clearpage
 Figure \ref{fig:rnn_neuron} illustrates the working of a RNN neuron: taking picture \ref{fig:DNN} as a starting point we can see the feedback loop inside an RNN neuron at work.
-The first picture shows the state of three neurons in the network on iteration 1: During the feed forward phase the neuron in the first hidden layer receives input $x$ from the input layer, processes it and passes it on to the consecutive layers; at the end of the feed forward phase, each neuron in the hidden layers saves its working values, and those values form the neuron's state.  
+The first picture shows the state of three neurons in the network on iteration 1: during the feed forward phase the neuron in the first hidden layer receives input $x$ from the input layer, processes it and passes it on to the consecutive layers; at the end of the feed forward phase, each neuron in the hidden layers saves its working values, and those values form the neuron's state.  
 
 In the next iteration (shown in the second picture) the process repeats, but this time the neuron in H1 receives not only input from $x$, but also its previous state as input; it processes the combined values and passes it on to the neuron in H2, which undergoes the same procedure.
 
@@ -117,7 +117,7 @@ Goodfellow et al.\cite{Goodfellow2014} explain the interplay between the two net
 
 Simply put, the two networks are trying to out-smart each other: $D$ tries to spot the fake samples from $p_g$, while $G$ tries to improve more and more to make $D$'s job harder.
 
-The output of $D$ is a single value between 0 and 1 expressing the network's confidence on whether a sample came from $x$; Values of $D(x)$ closer to 1 tend towards assigning a sample to the input data distribution.
+The output of $D$ is a single value between 0 and 1 expressing the network's confidence on whether a sample came from $x$: values of $D(x)$ closer to 1 tend towards assigning a sample to the input data distribution.
 Ideally, this race/competition between the two networks comes to an end when the output $D(x)$ stabilizes on $D(x)=0.5$, meaning that $D$ is no longer able to tell the two distributions apart.
 
 This also tells us that if we had infinite resources (both in  data samples and computing resources), we could train until $D(x)=0.5$ and $p_x=p_g$, giving us an output of $G$ that is indistinguishable from the input data.
@@ -130,7 +130,7 @@ The process described above can be formalized in the following general equation:
 \end{equation} 
 
 Since the network relies on this tight feedback loop between $D$ and $G$ to operate, one needs to pay close attention to how quickly each individual network learns.
-The idea, as the authors in \cite{Goodfellow2014} point out, is to have a certain number of iterations of $D$ before we go ahead and adjust the Error for $G$; Conceptually, we might think of this as giving $D$ enough time to tell the real data from the fake data reliably (or try), before iterating $G$ to counter $D$'s current strategy.
+The idea, as the authors in \cite{Goodfellow2014} point out, is to have a certain number of iterations of $D$ before we go ahead and adjust the Error for $G$. Conceptually, we might think of this as giving $D$ enough time to tell the real data from the fake data reliably (or try), before iterating $G$ to counter $D$'s current strategy.
 
 The original paper indicates this ratio with $k$, and notes that increasing it grows the required computation significantly. In their experiments the authors used a $k$ value of 1 for performance reasons, while PassGAN defaults to a $k$ value of 10\cite{PassGAN}.
 
@@ -148,7 +148,7 @@ For some simpler machine learning systems like image classifiers (a deep learnin
 As an example of why Testing is needed, one of the risks associated with deep learning systems is \emph{over-fitting}: over-fitting is a phenomenon wherein the network is \enquote{over trained} so to speak, it performs amazingly on the training data but is not flexible enough to maintain that performance with real data outside the narrow scope of training. Intuitively, we might think of it as the network being hyper-focused on the minute characteristics of the training data: it works very well in that specific context but it does not scale well, the features that the network picks up on might not be abstract or general enough to apply in a general case. 
 
 %Niels had a comment about this part, try to remember what it was.
-We are discussing the testing process in some depth because there is an important difference between PassGAN and image classifiers: The testing process described above simply does not work with PassGAN.
+We are discussing the testing process in some depth because there is an important difference between PassGAN and image classifiers: the testing process described above simply does not work with PassGAN.
 This is because PassGAN does not simply classify existing data, it creates new and unique data with potentially unseen characteristics: because we do  not know what kind of string PassGAN will generate in advance, we cannot write labels for them. Even if we were able to do so, we think that the nature of GANs is at odds with this approach since the interplay between $G$ and $D$ provides the same sort of feedback as labels do on image classifiers.\\
 
 %Not sure this is true, maybe in general or maybe only for FLA
@@ -170,7 +170,7 @@ Note that the number of models available changes depending on the amount of data
 %\cleardoublepage
 Shifting our discussion to the hyper-parameters used with PassGAN, they are values we can change to influence how the training is done. All of the hyper-parameters present in Hitaj et al. \cite{PassGAN} were kept the same in this paper. We will briefly touch upon some of them, explaining what they do and mentioning how they influenced our testing of PassGAN.
 
-There are three hyper-parameters that are relevant to this discussion: The first is \emph{sequence length}, a number that defines the maximum length of password candidates generated by PassGAN; this value is set to 10.\\ 
+There are three hyper-parameters that are relevant to this discussion: the first is \emph{sequence length}, a number that defines the maximum length of password candidates generated by PassGAN; this value is set to 10.\\ 
 Sequence length is important because it will influence what kind of passwords we use for testing, for the explanation of how sequence length comes into play the reader may look at section \ref{subsec:passgan-testing}.
 %might be wrong: training lenght should be set by setting the maximum number of training samples in the source code.
 Another important hyper-parameter is the number of total iterations, which defines for how long PassGAN should train: this number is set to $200000$, but PassGAN never reaches the last iteration during our tests: Hitaj. et al. arrived at this value after several experiments as the ideal length of training for their case, however in our paper we have a considerably smaller training dataset of around 530,000 passwords (80\% of the Libero set), so we have noticed that our training stops around iteration number 190000 or 195000 when PassGAN runs out of input data.

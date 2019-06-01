@@ -21,7 +21,7 @@ Key space is important because it forms the basis from which password cracking t
 It follows then, that one of principles of password strength is to make the search space big enough to be impractical to search through with current hardware.
 This is the reason why users are commonly advised to use a variety of different characters classes in their passwords, and also to use passwords of a certain minimum length.
 
-To ground our discussion of search space in the context of cracking, we should address how passwords are stored in the first place: As Morris and Thompson explain in their paper, the simplest approach is to store the users' passwords in a file or database as they are entered: this is a bad idea as any software bug that causes an accidental disclosure will leave the users exposed, and also because any privileged user can simply look up other users' passwords.
+To ground our discussion of search space in the context of cracking, we should address how passwords are stored in the first place: as Morris and Thompson explain in their paper, the simplest approach is to store the users' passwords in a file or database as they are entered: this is a bad idea as any software bug that causes an accidental disclosure will leave the users exposed, and also because any privileged user can simply look up other users' passwords.
 
 A better approach would be to somehow encrypt the user's password, and store the cypher text: when a user logs in, the string they typed is encrypted, compared with the cypher text and access is granted if it matches. This process is commonly achieved through a one-way cryptographic hash function, while Morris and Thompson use the DES algorithm in their paper.
 
@@ -90,7 +90,7 @@ The simplest kind of rules are \emph{masks}: they are a subset of mangling rules
 \enquote{Proper} mangling rules by contrast are more complex and more expressive, in line with a context-free or context-sensitive language; they will be covered is section \ref{par:rule-based}.
 Common examples of rules might be a rule that switches the case of the first letter of the string (mainly in order to capitalize passwords, a common strategy users employ to comply with password composition requirements), or a rule that appends one or two digits to the end of a string. 
 
-Two common rule-based password cracking tools are John The Ripper and \break \mbox{HashCat}\cite{john,hash_cat}: these tools use rules to exploit common patterns in user behaviour in order to optimize the cracking process: Both tools have a variety of techniques an attacker can employ, and we will briefly exemplify their capabilities using HashCat as an example \cite{hash_cat_wiki}:
+Two common rule-based password cracking tools are John The Ripper and \break \mbox{HashCat}\cite{john,hash_cat}: these tools use rules to exploit common patterns in user behaviour in order to optimize the cracking process. Both tools have a variety of techniques an attacker can employ, and we will briefly exemplify their capabilities using HashCat as an example \cite{hash_cat_wiki}:
 
 In both tools there are three categories of attacks that can be carried out: brute-force attacks, dictionaries attacks and rule-based attacks: these can be combined and tweaked in various ways depending on the desired result, and there is a degree of overlap between each.
 
@@ -114,12 +114,12 @@ Furthermore we can use the \texttt{--increment } option in HashCat to apply this
 This method is rather simplistic and not very flexible, but exemplifies some of the ways in which attackers can optimize key space attacks.
 
 \paragraph{Dictionary attacks}
-The main mode of operation oh HashCat \emph{straight} mode, that performs a dictionary attack: In this mode, the program is fed a wordlist/dictionary, and tries each entry the wordlist as a password candidate. Because of its simplicity, such a dictionary attack works best with a wordlist composed of leaked passwords; the aim is to target very common passwords and users that re-use passwords, but the effectiveness of such an attack can increase significantly depending on what wordlist is used.
+The main mode of operation oh HashCat \emph{straight} mode, that performs a dictionary attack: in this mode, the program is fed a wordlist/dictionary, and tries each entry the wordlist as a password candidate. Because of its simplicity, such a dictionary attack works best with a wordlist composed of leaked passwords; the aim is to target very common passwords and users that re-use passwords, but the effectiveness of such an attack can increase significantly depending on what wordlist is used.
 
 Dictionary attacks can be further enhanced by combining them in various ways: one approach would be to use two wordlists and append/prepend each entry in the second one to each entry in the first.\\ 
 The second wordlist might be a natural language dictionary or simply anther wordlist of plain-text leaked passwords. This is called \emph{Combinator attack} mode in HashCat. 
 
-We might also want to use the output of a mask attack as our second wordlist: If we use the patterns described in the Mask Attack mode to generate strings or number sequences we combine with a wordlist, we will obtain a more targeted and effective version of the Mask Attack method. 
+We might also want to use the output of a mask attack as our second wordlist: if we use the patterns described in the Mask Attack mode to generate strings or number sequences we combine with a wordlist, we will obtain a more targeted and effective version of the Mask Attack method. 
 
 For example if we know that a good deal of the passwords we want to extract are strings with numbers appended to the end, we might run a mask that generates combinations of 0 to 4 digits and then combine the output of that with our wordlist. This is called \emph{Hybrid attack} mode in HashCat.
 
