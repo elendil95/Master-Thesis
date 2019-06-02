@@ -1,0 +1,55 @@
+\section{Experimental notes}
+When training PassGAN on the libero set, the samples generates seem to have the genral pattern of user passwords; the network tries to generate strings that look like italian words, but are not. Testing of the output has not been performed yet, but i do wonder if including natural language dictionarie can help the network generate grammatically correct words and phrases.
+
+It is yet to be established how grammatically correct words may affet the cracking.
+
+In the next test i will try and add NL dictionaries and see how it goes. 
+
+My hope is that the network can retain the currect password characteristics, but imporve its ability to generate natural langage fragments. Perhaps trnaference learning might come in handy for this?
+
+\subsection{Update(28-2-2019)}
+
+After a second attempt i finished training the model (runtime was around 11.5 hours). i have a working model i can generate samples with, the same proprieties descrribed above hold after a full cycle of training. It is worth noting that after initially being stuck around \-0.8, the error eventually stabilized around \-0.6; This is the lowest i have seen so far.
+
+I am now ready to test this first sample, probably in HashCat. The plan is to extract the MD5 hashes and run a couple of tests:
+
+\begin{itemize}
+\item Run a rule-based attack using RockYou as a control group.
+\item Run a dictionary attack using the results of PAsGAN obtained from RockYou (and or Linked in, if i can spare 12 more hours to train)
+\item Run a dictionary attack using the results of PassGAN training on the Libero leak.
+\end{itemize}
+
+The main goal is to compare the last 2 with each otheer and see what differnces (if any) there are.
+
+After that i would like to train again on the Libero set using NL Dictionaries in the training data (which i have yet to acquire), to see if there is an imporvement or regression in the precentage of password cracked.
+
+\subsection{Update (2-4-2019)}
+
+So after the whole hash debackle i decided to take up Niels' advice (at least for now). I generated MD5 Hashes for the passwords and cracked them in hashcat. I generated MD5 Hashes for the passwords and cracked them in hashcat.
+Running hashcat with the rockyou wordlist + best64 rules yielde 140.478 passwords (33.57\%)
+
+Running hascat with only the rockyou wordlist gave me the same exact number of passwords, which is kinda suspicious.
+
+Running hashcat with the italian password outputted from PassGAN gave me 146.352 passwords, a whole 1.4\% more!
+
+Running hashcat on a subset of the linkedIn passwords using rockyou+best64 yielded 20\% of passwords, which makes no fukin sense.
+
+\textbf{trim the target database and the wordlist to a certain lenght (e.g. 10 characters) to match the PassGAN output}
+\textbf{Also use the 89\%-20\% split from PassGAN for testing with both the GAN and HashCat, to account for over-fitting}
+The nice thing about the RockYou set is that its a giant paste, so theoretically at least it should give lesss of a bias than other sets that have been previously cracket with JtR and Hashcat 
+
+\begin{itemize}
+\item Read PassGAN again and construct the experiements in line with theirs.
+    \subitem Only using PAssGAN, hashcat and JtR; no markov models or RNNs
+
+\item trim the validation set and the wordlists to passwords <= 10 characters    
+\subitem Run the 2 tests again, but this time against the 20\% validation set
+\end{itemize}
+
+Compare plaintexts?
+Comprare the output of PassGAN with the target database?
+
+PassGAN testing methodology:
+- trim rockyou to strings =< 10 char
+- Train PAssGAN on RockYou with 80\%-20\%
+
