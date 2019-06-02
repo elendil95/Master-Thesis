@@ -1,23 +1,22 @@
 \pdfbookmark[0]{English title page}{label:titlepage_en}
 \aautitlepage{%
   \englishprojectinfo{
-      %title
+    Exploring the impact of language differences on GANs for Password Cracking   %title
   }{%
-    Scientific Theme %theme
+    IT Security, Artificial Intelligence %theme
   }{%
-    Fall Semester 2017 %project period
+    Spring Semester 2019 %project period
   }{%
     8 % project group
   }{%
     %list of group members
     %Eugenio Maria Capuani\\ 
     %Kidane Mahari Tesfai\\
-    Kristoffer Carl Schou%\\
+    Eugenio Maria Capunai%\\
     %Rune Bastian Barrett
   }{%
     %list of supervisors
-    Supervisor 1\\
-    Supervisor 2
+    Niels Jørgensen
   }{%
     1 % number of printed copies
   }{%
@@ -28,7 +27,15 @@
   Roskilde University\\
   \href{http://www.ruc.dk}{http://www.ruc.dk}
 }{ %the abstract
-  In this report we go over the design of a database to support a Stack Overflow viewing application (for later implementation). We will also go through the functionality of that application and the normalization of the database.
+The goal of this thesis is to explore what impact language has on password cracking (if any) when using Generative Adversarial Networks (GANs) to crack passwords.
+In it we build on existing research by taking an existing GAN-based password cracker, and testing it with a dataset of leaked user passwords from Italy. 
+By comparing the performance of the resulting model with widely-used wordlists based primarily on English-language sources, as well as state-of-the-art rule-based tools, we hope to get insights into the impact that different grammatical structures have on both the performance of the GAN model, and by extension on its performance as a password cracking tool.
+%\newline
+In our testing we were able to crack almost 80\% of the Italian passwords in our database using GANs, while other state-of-the art tools only managed 71\%. Furthermore, we recovered a number of unique language-specific passwords that traditional tools would not have been able to find. 
+
+We also explored the impact of training GANs with natural language data in addition to password data, but found performance was about the same as without the extra natural language data.
+
+We conclude that language differences do have an impact on GAN-based tools, and that these tools are expressive enough to adapt to such differences. Overall GANs can be an effective tool for attacking non-english passwords, both in addition to state-of-the art tools or by themselves.
 }
 
 % \cleardoublepage
