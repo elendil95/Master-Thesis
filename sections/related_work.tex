@@ -1,4 +1,3 @@
-%EXPLAIN THAT DES IS TECHNICALLY AN ENCRYPTION ALGO, BUT THAT M&T USED IT FOR HASHING IN THE SAME WAY ONE MIGHT USE PGP FOR SIGNING.
 %IMPLEMENT IS THE DIAGRAM DEPICTING WORDLISTS AND RULES.
 %REMEMBER TO SPELL-CHECK THIS SECTION AGAIN
 
@@ -26,30 +25,33 @@ To ground our discussion of search space in the context of cracking, we should a
 
 A better approach would be to somehow encrypt the user's password, and store the cypher text: when a user logs in, the string they typed is encrypted, compared with the cypher text and access is granted if it matches. This process is commonly achieved through a one-way cryptographic hash function, while Morris and Thompson use the DES algorithm in their paper.
 
-%DES is an encryotion algo but they used it for hasing. also the proper name for a hash is "cryptographic hash function"
 Simply put, a cryptographic hash function is a mathematical function that encodes a string in a predictable way, mapping an arbitrary amount of input (a message of arbitrary length) to a string of a fixed length (a hash). 
 
-Cryptographic hash functions adhere to strict security standards (hence the adjective \enquote{cryptographic}) but they different from encryption algorithms like AES or GPG:
-one of the main differences between encryption and hashing algorithms is that an hashing algorithm is a one-way function, meaning there is no mechanism to decrypt or otherwise reverse the process once the input data has been hashed. 
+Cryptographic hash functions adhere to strict security standards (hence the adjective \enquote{cryptographic}) but they different from encryption algorithms: %like AES or PGP:
+one of the main differences between symmetric encryption and hashing algorithms is that an hashing algorithm is a one-way function, meaning there is no mechanism to decrypt or otherwise reverse the process once the input data has been hashed. 
 
 Another difference can be found in the purpose of hashing algorithms: broadly speaking they are used to compress information about an arbitrary amount of data into a string of a certain length; their main application is to act as \enquote{fingerprints} for a given message, ensuring the integrity and/or authenticity of the data rather than its confidentiality.
 
-The reason why they are used with passwords is that in a scenario like the one mentioned above (where whatever string the user types is hashed and compared with the hash in the database) there is no need for decryption: yes the hash algorithm obscured the input, but its main role its to make sure the password the user enters at login is the same as the one that is stored in the database.
+We should note that DES - the algorithm used by Morris and Thompson \cite{Thompson1979} to hash passwords, is in fact a symmetric encryption algorithm: the authors used it to encrypt a known constant using the user's password as a key and stored the resulting cypher text.
+This in effect gave them the same results as a hashing algorithm: the massage text itself has no value, but the system can encrypt this constant with the string provided by the user and see if the resulting cypher text matches the contents of the database.
+Morris and Thompson chose to use DES mostly due to the fact that the algorithm ran quite slowly on computers of the period: it wouldn't be much of an issue to encrypt and check small numbers of passwords, but this slow software implementation would add a lot of time to any cracking attempt.
+
+The reason why hashing algorithms are used with passwords is that in a scenario like the one mentioned before (where whatever string the user types is hashed and compared with the hash in the database) there is no need for decryption: the hash algorithm obscures the input, but its main role its to make sure the password the user enters at login is the same as the one that is stored in the database.
 Additionally, the mere possibility of decrypting a user's password might represent a security risk: if a user forgets a password we do not need to  decrypt it and show it to the user, we can simply delete the password and ask him to make a new one. 
 
-Crucially, in order to accomplish its task a hashing algorithm needs to be predictable i.e always output the same string for a given input: this is a propriety an attacker can exploit as we will see shortly. 
+Crucially, in order to accomplish this task a hashing algorithm needs to be predictable i.e always output the same string for a given input: this is a propriety an attacker can exploit as we will see shortly. 
 
 When a strong hashing algorithm is used, an attacker will theoretically have to do a key space search in order to crack the users' password: this process will take even more time, as every candidate string/password must be first hashed with the same algorithm and then looked up in the database.
 
 Hashing alone does not solve the problem however, because in reality an attacker would not have to resort to brute-forcing in a majority of cases.
 
-Because the hashing algorithm needs to always output the same result for a given input string, the attacker can start comparing the hashes in the database and draw some conclusion: if some hashes appear many times, they probably hold the plain text of some very common passwords; if the attacker cracks those first and starts looking for similar patterns, he may crack a sizable number of the passwords contained in the database.
+Because the hashing algorithm needs to be predictable, the attacker can start comparing the hashes in the database and draw some conclusion: if some hashes appear many times, they probably hold the plain text of some very common passwords; if the attacker cracks those first and starts looking for similar patterns, he may crack a sizable number of the passwords contained in the database.
 
 Practically, an attacker can exploit this predictability by building a table with pre-computed hashes for all the most common passwords: this technique saves a lot of time since we do not need to encrypt every candidate password before comparing it with the database, and instead we merely look up the hashes from the table in the database. 
 
 These tables are commonly referred to as \emph{Rainbow Tables}, and they are a simplified version of the rule-based techniques covered in section \ref{hash_and_jtr}.
 
-Rainbow tables can be defeated by using \emph{password salting}: salting works by generating a random string that is then appended to the user's password before it is hashed (mainly when the user first creates the account). The authors in \cite{Thompson1979} use a 12-bit random number as their salt, but modern sources suggest the use of longer and more complex salts \cite{NIST_2017}; by generating a unique salt per each user (or even better, per each individual password a user creates), rainbow tables and correlation attacks will be rendered useless as its no longer possible to generate hashes of passwords that will work on the target; one might attempt to generate tables that contain salts, but this is impractical as it would mean brute-forcing the key space of the salt.
+Rainbow tables can be defeated by using \emph{password salting}: salting works by generating a random string that is then appended to the user's password before it is hashed (mainly when the user first creates the account). The authors in \cite{Thompson1979} use a 12-bit random number as their salt, but modern sources suggest the use of longer and more complex salts \cite{NIST_2017}; by generating a unique salt per each user (or even better, per each individual password a user creates), rainbow tables and correlation attacks will be rendered useless as its no longer possible to meaningfully compare hashes; one might attempt to generate tables that contain salts, but this is impractical as it would mean brute-forcing the key space of the salt.
 This can be done however in cases where the salt is very short, or alternatively when the system administrators have chosen one fixed salt string with which every password is processed.
 The latter mistake its particularly grave, as it defeats the purpose of having salts in the first place.
    
@@ -60,14 +62,14 @@ For a more current example of how these security practices have evolved since 19
 This standard is intended to provide security guidelines for information systems within the US government, and was released in June 2017.
 
 Document SP 800-63-3B \cite{NIST_2017}, provides guidelines on how user secrets (passwords and/or PINs) should be stored.\\
-They suggest that user passwords should be between 8 and 64 characters, but advise against enforcing password policies concerning the composition of passwords; Instead, they suggest that user passwords be checked against a list of leaked passwords and dictionary words before they are accepted, in order to avoid the use of weak passwords.
+They suggest that user passwords should be between 8 and 64 characters, but advise against enforcing password policies concerning the composition of passwords; instead, they suggest that user passwords be checked against a list of leaked passwords and dictionary words before they are accepted, in order to avoid the use of weak passwords.
 
-When it comes to encryption, they suggest the use of the PBKDF2 and Balloon algorithms; Other hashing algorithms listed as suitable for password encryption include HMAC and SHA-3.
+When it comes to hashing, they suggest the use of the PBKDF2 and Balloon algorithms; Other hashing algorithms listed as suitable for password storage include HMAC and SHA-3.
 
 Furthermore, they recommend that all passwords be salted with at least a 32bit quantity; to our understanding the standard calls for a unique salt for each user, as opposed to a unique salt for each password. The salts should be stored alongside the hashed password of the user.
 
-In order to foil dictionary attacks in cases where the attacker has access to the users' salts alongside the hashes, the system should perform an additional iteration of the encryption algorithm using a different 112bits salt that should be secret and stored on separate hardware form the main database.\\
-If we were to apply such process before encrypting the users password with the standard 32bit salt, this would effectively neutralize all dictionary attacks even when the attacker factors the salts into the process.
+In order to foil dictionary attacks even in cases where the attacker has access to the users' salts alongside the hashes, the system should perform an additional iteration of the hashing algorithm using a different 112bits salt that should be secret and stored on separate hardware form the main database.\\
+If we were to apply such process before hashing the users' passwords with the standard 32bit salt, this would effectively neutralize all dictionary attacks even when the attacker factors the salts into the process.
 
 To conclude this discussion of password storage and security, we will briefly touch upon our main dataset used in the thesis: the Libero dataset.
 
@@ -81,12 +83,12 @@ Now that we have a better notion of how passwords are stored, the next section w
 
 %Add a diagram with the process of applying rules and using wordlists
 \subsubsection{Rule-Based password crackers} \label{hash_and_jtr}
-Unlike other password cracking tools made for brute-forcing passwords, rule-based tools rely on their name sake in order to attack a greater variety of passwords:
+Unlike other password cracking tools made for brute-forcing passwords, rule-based tools rely on \emph{mangling rules} in order to attack a greater variety of passwords:
 
 Mangling rules are patters that define how a string should be modified, they can be given in either in a regular language or in a more complex form.
-Their purpose is to modify each string in a wordlist or dictionary so that one entry in the wordlist can match multiple, similar passwords.\\
+Their purpose is to modify each string in a wordlist or dictionary so that one entry in the wordlist can match multiple, similar passwords.
 
-The simplest kind of rules are \emph{masks}: they are a subset of mangling rules whose use will be explained in section \ref{par:brute-force}. Masks are patterns expressed in a regular language, that define what character classes are in a password and at what position: their main function is to shrink the key space when executing brute-force attacks.
+The simplest kind of rules are \emph{masks}: they are a subset of mangling rules whose use will be explained in section \ref{par:brute-force}. Masks are patterns expressed in a regular language, that define what character classes are in a password and at what position: their main function is to shrink the key space of a password when executing brute-force attacks.
 
 \enquote{Proper} mangling rules by contrast are more complex and more expressive, in line with a context-free or context-sensitive language; they will be covered is section \ref{par:rule-based}.
 Common examples of rules might be a rule that switches the case of the first letter of the string (mainly in order to capitalize passwords, a common strategy users employ to comply with password composition requirements), or a rule that appends one or two digits to the end of a string. 
@@ -97,12 +99,12 @@ In both tools there are three categories of attacks that can be carried out: bru
 
 
 \begin{itemize}
-\item Brute-force attacks try every possible combination of characters within a defined pattern, and thus closely relate to keyspace search. 
+\item Brute-force attacks try every possible combination of characters within a defined pattern, and thus closely relate to key space search. 
 \item Dictionary attacks use a dictionary of words or passwords as a source for password candidates, that are hashed and checked against the target to see if any of them match
 \item Rule-based attacks are an evolution of Dictionary attacks, in which the dictionary's effectiveness is boosted by some mangling rules that change the words in ways that reflect common patterns in user-generated passwords.
 \end{itemize}
 
-HashCat distinguishes between brute-force attacks and wordlist-based attacks with two separate modes (a mode is a setting that defines the kind of attack that HashCat should carry out), but there is no such distinction between wordlist-based attacks and Rule-based attacks: instead rules are an optional parameter one can use in wordlist attack mode to greatly increase the effectiveness of the wordlist. The following three sections will cover HashCat's attack strategies by the different modes present in the software. 
+HashCat distinguishes between brute-force attacks and wordlist-based attacks with two separate modes (a mode is a setting that defines the kind of attack that HashCat should carry out), but there is no such distinction between wordlist-based attacks and rule-based attacks: instead rules are an optional parameter one can use in wordlist attack mode to greatly increase the effectiveness of the wordlist. The following three sections will cover HashCat's attack strategies by the different modes present in the software. 
 
 \paragraph{Brute-force attacks}\label{par:brute-force}
 The simplest of these modes is \emph{Mask attack} mode, used to carry out brute-force attacks as we mentioned previously: a mask attack is essentially an optimized version of key space search, meant to attack simpler passwords while shrinking the key space search. 

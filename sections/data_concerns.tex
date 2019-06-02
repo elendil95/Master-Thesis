@@ -2,7 +2,6 @@
 In the next section we will cover our experiments with PassGAN and the Libero dataset.
 Before that however we need to address some fundamental issues with the dataset: firstly, our copy of the Libero database only contained plain texts passwords, and secondly we were unable to verify the exact provenance of this data.
 A direct link to the copy of the Libero leak used in this paper can be found in our reference list \cite{passgan-download}.
-%mention the exact filename
 
 As mentioned in section \ref{subsec:password_cracking}, the Libero set is a JSON formatted file containing various pieces of information for each of the roughly 700.000 users within: common fields for each user include email address, user-name and internal User ID, but some users in the document also have a real name attached and other kinds of personal information.  As for the passwords, each user record contains both a plain text password and an MD5 hash.
 However something is wrong with the hashes: upon closer inspection we find that the MD5 hash is the same for each user, and that MD5 hash encodes the word \enquote{boomerang}.
