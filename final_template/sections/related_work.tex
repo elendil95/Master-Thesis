@@ -1,8 +1,5 @@
 %IMPLEMENT IS THE DIAGRAM DEPICTING WORDLISTS AND RULES.
-%REMEMBER TO SPELL-CHECK THIS SECTION AGAIN
 
-%The main process of encoding is hashing not encryption! doont mention encryption if you can.
-%encryption is a 2 way fnction cuz you can decrypt andd encypt, there s no decrypt fr hashes.
 \section{Related Work}\label{sec:related_work}
 Both Password Cracking and Deep Learning are active areas of research developing at a rapid pace.
 
@@ -15,19 +12,19 @@ back in 1979, Morris and Thompson were already aware of different ways to attack
 At the base of all password attacks is the concept of \emph{key space}, i.e the set of all possible passwords of a certain length that use a specific character set \cite{Thompson1979,hash_cat_mask_attack}. 
 
 Key space can be formally defined as the set of all possible keys for some given parameters. The two parameters in question are: the Alphabet of the key (the set of all symbols or characters used in the key), and the length of the key.
-Key space can be theoretically infinite, but in practice it is bound by both the alphabet and the key length: in the case of an hexadecimal key of length 10, the key space can be quantified as $16^{10}$ possibilities; on the other hand in the case of the password \texttt{password} (written with lowercase characters only), the key space can be expressed as $26^8$. %convert keyspace sizes to power of 2 to compare the size in bits
+Key space can be theoretically infinite, but in practice it is bound by both the alphabet and the key length: in the case of an hexadecimal key of length 10, the key space can be quantified as $16^{10}$ possibilities; on the other hand in the case of the password \texttt{password} (written with lowercase characters only), the key space can be expressed as $26^8$. %convert key space sizes to power of 2 to show the key length and compare.
 
 Key space is important because it forms the basis from which password cracking techniques work off: if the password is sufficiently complex, an attacker will have to do an exhaustive search of the key space in order to find the password. 
 It follows then, that one of principles of password strength is to make the search space big enough to be impractical to search through with current hardware.
 This is the reason why users are commonly advised to use a variety of different characters classes in their passwords, and also to use passwords of a certain minimum length.
 
-To ground our discussion of search space in the context of cracking, we should address how passwords are stored in the first place: as Morris and Thompson explain in their paper, the simplest approach is to store the users' passwords in a file or database as they are entered: this is a bad idea as any software bug that causes an accidental disclosure will leave the users exposed, and also because any privileged user can simply look up other users' passwords.
+To ground our discussion of search space in the context of cracking, we should address how passwords are stored in the first place: as Morris and Thompson explain in their paper, the simplest approach is to store the users' passwords in a file or database as they are entered. This is a bad idea as any software bug that causes an accidental disclosure will leave the users exposed, and also because any privileged user can simply look up other users' passwords.
 
-A better approach would be to somehow encrypt the user's password, and store the cypher text: when a user logs in, the string they typed is encrypted, compared with the cypher text and access is granted if it matches. This process is commonly achieved through a one-way cryptographic hash function, while Morris and Thompson use the DES algorithm in their paper.
+A better approach would be to somehow encrypt the user's password, and store the cypher text in the database: when a user logs in, the string they typed is encrypted, compared with the cypher text and access is granted if it matches. This process is commonly achieved through a one-way cryptographic hash function, while Morris and Thompson use the DES algorithm in their paper.
 
 Simply put, a cryptographic hash function is a mathematical function that encodes a string in a predictable way, mapping an arbitrary amount of input (a message of arbitrary length) to a string of a fixed length (a hash). 
 
-Cryptographic hash functions adhere to strict security standards (hence the adjective \enquote{cryptographic}) but they different from encryption algorithms: %like AES or PGP:
+Cryptographic hash functions adhere to certain security standards (hence the adjective \enquote{cryptographic}) but they are different from encryption algorithms: %like AES or PGP:
 one of the main differences between symmetric encryption and hashing algorithms is that an hashing algorithm is a one-way function, meaning there is no mechanism to decrypt or otherwise reverse the process once the input data has been hashed. 
 
 Another difference can be found in the purpose of hashing algorithms: broadly speaking they are used to compress information about an arbitrary amount of data into a string of a certain length; their main application is to act as \enquote{fingerprints} for a given message, ensuring the integrity and/or authenticity of the data rather than its confidentiality.
@@ -55,9 +52,6 @@ Rainbow tables can be defeated by using \emph{password salting}: salting works b
 This can be done however in cases where the salt is very short, or alternatively when the system administrators have chosen one fixed salt string with which every password is processed.
 The latter mistake its particularly grave, as it defeats the purpose of having salts in the first place.
    
-% Let us suppose that an attacker has access to both the hashed passwords of the users and the salts that each password uses: it is conceivable that one might extract all the salts from the database, put them in a dictionary, and use them in a rule-based dictionary attack such as the ones that will be described in section \ref{hash_and_jtr}: if the salt for each user is stored in the database, we do not need to brute-force the key space of the salt: every salt belongs to one of the users, hence we merely need to try them all sequentially on every password candidate. 
-% A remedy for such scenario is offered in \cite{NIST_2017} and will be discussed further down. %FUCK ME WITH A RUSTY SPEAR, I HAVE NO IDEA IF THIS IS BS I JUST MADE UP!
-
 For a more current example of how these security practices have evolved since 1979, we can look at the National Institute of Standards and Technologies' standard SP 800-63-3.
 This standard is intended to provide security guidelines for information systems within the US government, and was released in June 2017.
 
@@ -101,23 +95,23 @@ In both tools there are three categories of attacks that can be carried out: bru
 \begin{itemize}
 \item Brute-force attacks try every possible combination of characters within a defined pattern, and thus closely relate to key space search. 
 \item Dictionary attacks use a dictionary of words or passwords as a source for password candidates, that are hashed and checked against the target to see if any of them match
-\item Rule-based attacks are an evolution of Dictionary attacks, in which the dictionary's effectiveness is boosted by some mangling rules that change the words in ways that reflect common patterns in user-generated passwords.
+\item Rule-based attacks are an evolution of Dictionary attacks, in which the dictionary's effectiveness is boosted by mangling rules that change the words in ways that reflect common patterns in user-generated passwords.
 \end{itemize}
 
-HashCat distinguishes between brute-force attacks and wordlist-based attacks with two separate modes (a mode is a setting that defines the kind of attack that HashCat should carry out), but there is no such distinction between wordlist-based attacks and rule-based attacks: instead rules are an optional parameter one can use in wordlist attack mode to greatly increase the effectiveness of the wordlist. The following three sections will cover HashCat's attack strategies by the different modes present in the software. 
+HashCat distinguishes between brute-force attacks and wordlist-based attacks with two separate modes (a mode is a setting that defines the kind of attack that HashCat should carry out), but there is no such distinction between wordlist-based attacks and rule-based attacks: instead rules are an optional parameter one can use in wordlist attack mode to greatly increase the effectiveness of the wordlist. The following three sections will cover HashCat's attack strategies using the different modes present in the software. 
 
 \paragraph{Brute-force attacks}\label{par:brute-force}
-The simplest of these modes is \emph{Mask attack} mode, used to carry out brute-force attacks as we mentioned previously: a mask attack is essentially an optimized version of key space search, meant to attack simpler passwords while shrinking the key space search. 
+The simplest of these modes is \emph{Mask attack} mode, used to carry out brute-force attacks as we mentioned previously: a mask attack is essentially an optimized version of key space search, meant to attack simpler passwords while shrinking the key space. 
 Instead of searching the total space for a password of length $x$, we define a simple regular pattern expressing the what character classes are there and at which position, saving us a substantial amount of processing time.
-For example if we have a password like \texttt{Benjamin86} or \texttt{Iloveyou02}, we can capture both examples by defining a pattern to be a ten-character string with eight lowercase or uppercase letters and two numbers at the end; This is referred to as a \emph{Mask} in HashCat's documentation:
+For example if we have a password like \texttt{Benjamin86} or \texttt{Iloveyou02}, we can capture both examples by defining our password mask to be a ten-character string with eight lowercase or uppercase letters and two numbers at the end.
 
 In a classic brute-force attack we would deal with a search space of $62^{10}$ (or roughly $8 \times 10^{17}$ combinations), but thanks to the above-mentioned mask we can reduce our search space to around $4 \times 10^{13}$ possibilities if we assume that the first character in the string is the only one that can be uppercase.
-Furthermore we can use the \texttt{--increment } option in HashCat to apply this mask recursively, to all strings up to ten characters: this allows us to match shorter passwords that follow the same pattern.
+Furthermore we can use \mbox{the \texttt{--increment}} option in HashCat to apply this mask recursively, to all strings up to ten characters: this allows us to match shorter passwords that follow the same pattern.
 
 This method is rather simplistic and not very flexible, but exemplifies some of the ways in which attackers can optimize key space attacks.
 
 \paragraph{Dictionary attacks}
-The main mode of operation oh HashCat \emph{straight} mode, that performs a dictionary attack: in this mode, the program is fed a wordlist/dictionary, and tries each entry the wordlist as a password candidate. Because of its simplicity, such a dictionary attack works best with a wordlist composed of leaked passwords; the aim is to target very common passwords and users that re-use passwords, but the effectiveness of such an attack can increase significantly depending on what wordlist is used.
+The main mode of operation of HashCat is \emph{straight} mode, that performs a dictionary attack: in this mode, the program is fed a wordlist/dictionary, and tries each entry the wordlist as a password candidate. Because of its simplicity, such a dictionary attack works best with a wordlist composed of leaked passwords; the aim is to target very common passwords and users that re-use passwords, but the effectiveness of such an attack can increase significantly depending on what wordlist is used.
 
 Dictionary attacks can be further enhanced by combining them in various ways: one approach would be to use two wordlists and append/prepend each entry in the second one to each entry in the first.\\ 
 The second wordlist might be a natural language dictionary or simply anther wordlist of plain-text leaked passwords. This is called \emph{Combinator attack} mode in HashCat. 
@@ -127,11 +121,11 @@ We might also want to use the output of a mask attack as our second wordlist: if
 For example if we know that a good deal of the passwords we want to extract are strings with numbers appended to the end, we might run a mask that generates combinations of 0 to 4 digits and then combine the output of that with our wordlist. This is called \emph{Hybrid attack} mode in HashCat.
 
 \paragraph{Rule-based attacks}\label{par:rule-based}
-Finally we come to rule-based attacks, In short they are an extension of all the methods described above. 
+Finally we come to rule-based attacks. In short they are an extension of all the methods described above. 
 As we said previously  rule-based attacks do not have a dedicated mode, but instead they are often used in \emph{straight} mode alongside a wordlist in order to boost the number of passwords found by that wordlist.
 
 Rules are flexible and allow for more thorough definition of the patterns that may appear in a password, going beyond the capabilities of the regular language used with Masks.
-Patterns can be created independently of the size and characteristics of the passwords, and they are not limited to a fixed patterns; there are also flow control statements and options to apply rules only in certain conditions.
+Patterns can be created independently of the size and characteristics of the passwords, and they are not limited to a fixed pattern; there are also flow control statements and options to apply rules only in certain conditions.
 There are also options to save password candidates to memory enabling more advanced processing: saved strings can be appended to each password candidate matching certain criteria, reversed and so on...
 These more advanced options allow an attacker to emulate the operation of both Combinator and Hybrid attacks using just mangling rules. 
 
@@ -139,7 +133,7 @@ Rules are applied once to each entry in a wordlist in a similar way to a combina
 
 Rules provide a more efficient way to tackle password cracking since their greater flexibility means that an attacker need not know as much about their target or about the nature of the passwords he is trying to crack. 
 
-In order to get a better idea of how rules are used we can look at the \emph{best64} rules, which contain around 70 commonly used mangling rules. The two examples below are taken from \texttt{best64.rule}, a version of the best64 rules that is commonly distributed with HashCat:
+In order to get a better idea of how rules are used we can look at the \emph{best64} rules, which contain around 70 commonly used mangling rules. The two examples below are taken from the \texttt{best64.rule} file, a version of the best64 rules that is commonly distributed with HashCat:
 \begin{verbatim}
 ## nothing, reverse, case... base stuff
 :
@@ -148,7 +142,8 @@ u
 T0
 \end{verbatim}
 
-The rules above are rather simple, they simply reverse a string, toggle each character's case or toggle the case of the first character: as we can see these rules already reflect some common patters used by users, such as using common words spelled backwards or toggling a word's case as a way to comply with password policies.
+The rules above are rather simple, they simply reverse a string, toggle each character's case or toggle the case of the first character: as we can see these rules already reflect some common patters used by users, such as using common words spelled backwards or toggling a word's case as a way to comply with password composition policies.
+\clearpage
 Further down in the same file we can find some more complex rules:
 \begin{verbatim}
 ## leetify
@@ -168,12 +163,12 @@ Additionally, one needs to know the type of hash the passwords are encoded with.
 Let us give an example of a HashCat command we used in our thesis to perform a dictionary attack using rules, and walk through the various parameters (Note that the red arrows are simply a visual aid to indicate line wrapping, to make the command fit on the page):
 
 \begin{lstlisting}[breaklines=true,postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
-hashcat -a 0 -m 0 test_10c.hash /usr/share/hashcat/wordlist/rockyou.txt -r /usr/share/hashcat/rules/best64.rule
+hashcat -a 0 -m 0 test_10c.hash /usr/share/hashcat/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best64.rule
 \end{lstlisting}
 
 Starting from the left:
 \begin{itemize}
-\item The first parameter \texttt{-a} indicates the attack mode, the value 0 equals to straight mode in this case for a dictionary attack.
+\item The first parameter \texttt{-a} indicates the attack mode: the value 0 equals to straight mode in this case for a dictionary attack.
 
 \item The second parameter \texttt{-m} indicates the hash type, hash type number 0 is MD5. As we mentioned previously (towards the end of section \ref{subsec:password_cracking}), we chose to hash the plain text passwords in the Libero dataset with MD5 for the purposes of testing.
 
@@ -186,6 +181,6 @@ Starting from the left:
 \item The sixth parameter is the ruleset that we want to use. In this particular instance we have used \texttt{best64.rule}, the same ruleset we have taken the example rules from.    
 \end{itemize}
 
-Running this command will print the cracked passwords to standard output as they are found, in the format \texttt{hash:plaintext}, alternatively it is also possible to save the results to a file with the \texttt{-o} option.
+Running this command will print the cracked passwords to standard output as they are found, in the format \texttt{hash:plaintext}. Alternatively it is also possible to save the results to a file with the \texttt{-o} option.
 
 We should also note that in this example we did not show how to deal with salted passwords: as we explain in section \ref{sec:libero}, the Libero dataset did not come with any salts, so we do not deal with them in this paper.
