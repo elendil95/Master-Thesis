@@ -1,0 +1,1 @@
+texcount -1 -sum -relaxed -all-nonspace-char -merge -incbib -tex -utf8 main.tex
