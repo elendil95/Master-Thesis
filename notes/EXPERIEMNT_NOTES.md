@@ -80,3 +80,13 @@ Try to crack the training set with big PassGAN and see if the results are signif
 
 ##Random notes
 PassGAN samples at a rough speed of 64000 samples written every 2 seconds
+
+##Pre-trained model vs. OG PassGAN model (both 195000 iterations)
+* just_pretrained: 5,212 (6.45%) of passwords found.
+* pretrained+best64: 14,005 (17.33%) of passwords found.
+* pretrained+gen2: 41,222 (51.01%) of passwords found.
+
+* just_passgan: 12,096 (14.97%) of passwords found.
+* passgan+best64: 23,352 (28.90%) of passwords found.
+* passgan+gen2: 50,318 (62.27%) of passwords found.
+
